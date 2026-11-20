@@ -58,11 +58,16 @@ export function useChat(location: Position | null = null) {
     locationRef.current = location;
   }, [location]);
 
+  // 새 대화를 시작할 때마다 1씩 올린다. 이전 대화에서 보낸 요청의 답이 늦게 도착해도 새 대화에 끼어들지 않게 한다.
+  const generation = useRef(0);
+
   const request = useCallback(async () => {
+    const myGeneration = generation.current;
     setLoading(true);
     setError(null);
     try {
       const data = await askServer(history.current, locationRef.current);
+      if (myGeneration !== generation.current) return; // 그 사이 새 대화가 시작됨: 버린다
       const reply: UiMessage = {
         id: nextId.current++,
         role: "assistant",
@@ -72,10 +77,20 @@ export function useChat(location: Position | null = null) {
       history.current = [...history.current, reply];
       setMessages(history.current);
     } catch (e) {
+      if (myGeneration !== generation.current) return;
       setError(e instanceof Error && e.message ? e.message : MESSAGES.aiFailure);
     } finally {
-      setLoading(false);
+      if (myGeneration === generation.current) setLoading(false);
     }
+  }, []);
+
+  /** 새 대화를 시작한다. 대화 목록·오류·진행 중인 답변을 모두 비운다. (서버에 저장한 것은 없다) */
+  const reset = useCallback(() => {
+    generation.current += 1;
+    history.current = [];
+    setMessages([]);
+    setError(null);
+    setLoading(false);
   }, []);
 
   /** 질문을 보낸다. 빈 글이거나 답변을 기다리는 중이면 무시한다. */
@@ -98,5 +113,5 @@ export function useChat(location: Position | null = null) {
     if (last?.role === "user") await request();
   }, [loading, request]);
 
-  return { messages, loading, error, send, retry };
+  return { messages, loading, error, send, retry, reset };
 }
