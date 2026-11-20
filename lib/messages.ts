@@ -7,7 +7,7 @@ export const MESSAGES = {
   /** PRD 5번 M1 규칙 7 */
   askInEnglish: "Please ask in English.",
   /** 설계 제안 */
-  tooLong: "Please keep your message under 300 characters.",
+  tooLong: "Please keep your message within 300 characters.",
   /** 설계 제안 */
   invalidRequest: "Sorry, I couldn't read that request. Please try again.",
   /** 설계 제안 */
