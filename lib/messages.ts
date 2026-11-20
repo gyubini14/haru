@@ -13,6 +13,9 @@ export const MESSAGES = {
   /** 설계 제안: 웹 검색으로 확인된 장소가 하나도 없을 때 */
   noConfirmedPlaces:
     "I couldn't confirm specific places for that yet. Could you tell me the area or what you're looking for?",
+  /** 설계 제안: 주제 밖 질문을 거절하며 도울 수 있는 주제를 안내 (PRD M1 규칙 6) */
+  offTopic:
+    "Sorry, I can't help with that. I can help with food, places to stay, transport, photo spots, K-drama and idol filming locations, and day plans in Korea.",
   /** 설계 제안: 숙소 추천에 필요한 정보 (PRD M1 규칙 4) */
   accommodationItems: {
     area: "the area you'd like to stay in",

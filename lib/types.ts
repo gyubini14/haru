@@ -29,6 +29,10 @@ export interface Place {
   verified: boolean;
   /** 이 장소를 확인한 웹 검색 결과 주소 (확인된 경우에만) */
   sourceUrl: string | null;
+  /** 출처가 한국 사이트(한국인 커뮤니티·블로그·예약 사이트)인지 */
+  fromKoreanSource: boolean;
+  /** 숙소의 예약 시 주의점 1문장 (숙소가 아니면 null) */
+  bookingTips: string | null;
   /** 지도 좌표. 확인하지 못하면 null (좌표 변환은 작업 12에서 연결) */
   position: Position | null;
   /** 지도에 올리지 못한 이유 */

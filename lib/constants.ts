@@ -34,5 +34,9 @@ export const OPENAI_MODEL = "gpt-4o-mini";
 /** OpenAI 응답을 기다리는 최대 시간(ms). PRD 응답 시간 목표(20초)에 맞춘다 */
 export const OPENAI_TIMEOUT_MS = 20_000;
 
+/** 질문 분류 단계의 제한 시간(ms)과 최대 출력 길이(토큰). 가볍고 빨라야 한다 */
+export const TRIAGE_TIMEOUT_MS = 8_000;
+export const TRIAGE_MAX_OUTPUT_TOKENS = 200;
+
 /** AI 답변 최대 출력 길이(토큰). 응답 시간과 비용을 줄이기 위한 제한 */
 export const OPENAI_MAX_OUTPUT_TOKENS = 1500;
