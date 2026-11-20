@@ -10,7 +10,7 @@ export function ChatPanel() {
   const { messages, loading, error, send, retry } = useChat();
 
   return (
-    <section className="mx-auto flex h-dvh w-full max-w-2xl flex-col">
+    <section className="mx-auto flex h-full w-full max-w-2xl flex-col">
       <header className="border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
         <h1 className="text-xl font-bold">Haru</h1>
         <p className="text-sm text-zinc-500 dark:text-zinc-400">
