@@ -41,9 +41,9 @@ export function ChatInput({ disabled, onSend }: ChatInputProps) {
           }}
           placeholder="Ask about Korea…"
           aria-label="Your message"
-          className="w-full resize-none rounded-xl border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-900 outline-none focus:border-amber-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+          className="w-full resize-none rounded-3xl border border-line bg-paper px-5 py-3 text-base text-ink outline-none placeholder:text-mute focus:border-ink"
         />
-        <p className="mt-1 text-right text-xs text-zinc-500">
+        <p className="mt-1 pr-3 text-right text-xs text-mute">
           {text.length}/{MAX_MESSAGE_LENGTH}
         </p>
       </div>
@@ -51,7 +51,7 @@ export function ChatInput({ disabled, onSend }: ChatInputProps) {
         type="submit"
         disabled={!canSend}
         aria-label="Send"
-        className="mb-5 h-10 rounded-xl bg-amber-400 px-4 font-semibold text-zinc-900 disabled:cursor-not-allowed disabled:opacity-40"
+        className="mb-6 h-11 rounded-full bg-ink px-6 text-sm font-medium text-paper transition-opacity disabled:cursor-not-allowed disabled:opacity-30"
       >
         Send
       </button>

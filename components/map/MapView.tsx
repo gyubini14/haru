@@ -14,6 +14,14 @@ const DEFAULT_ZOOM = 11;
 // 장소가 한 곳일 때 확대 정도
 const SINGLE_PLACE_ZOOM = 15;
 
+// 채도를 낮추고 불필요한 가게 표시를 숨긴 지도 스타일
+const MAP_STYLES: google.maps.MapTypeStyle[] = [
+  { stylers: [{ saturation: -100 }, { lightness: 4 }] },
+  { featureType: "poi.business", stylers: [{ visibility: "off" }] },
+  { featureType: "transit", elementType: "labels.icon", stylers: [{ visibility: "off" }] },
+  { featureType: "water", stylers: [{ color: "#dcdcdc" }] },
+];
+
 let optionsSet = false;
 
 type Status = "loading" | "ready" | "unavailable";
@@ -54,6 +62,8 @@ export function MapView({ places }: MapViewProps) {
           streetViewControl: false,
           mapTypeControl: false,
           fullscreenControl: false,
+          // 흑백 계열의 차분한 지도 색 (보이는 모양만 바꾼다)
+          styles: MAP_STYLES,
         });
         setMap(created);
         setStatus("ready");
@@ -82,8 +92,16 @@ export function MapView({ places }: MapViewProps) {
         map,
         position: place.position,
         title: place.name,
-        // 장소 카드의 번호와 같은 번호를 표시한다
-        label: { text: String(index + 1), fontWeight: "bold" },
+        // 장소 카드의 번호와 같은 번호를 검은 원 안에 표시한다
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 13,
+          fillColor: "#181818",
+          fillOpacity: 1,
+          strokeColor: "#ffffff",
+          strokeWeight: 2,
+        },
+        label: { text: String(index + 1), color: "#ffffff", fontWeight: "600", fontSize: "12px" },
       });
       markersRef.current.push(marker);
       bounds.extend(place.position);
@@ -99,10 +117,10 @@ export function MapView({ places }: MapViewProps) {
   }, [map, places]);
 
   return (
-    <div className="relative h-full w-full bg-zinc-100 dark:bg-zinc-900">
+    <div className="relative h-full w-full bg-soft">
       <div ref={containerRef} className="h-full w-full" aria-label="Map of Korea" />
       {status !== "ready" && (
-        <p className="absolute inset-0 flex items-center justify-center px-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="absolute inset-0 flex items-center justify-center px-4 text-center text-sm text-mute">
           {status === "loading" ? "Loading map…" : "The map is not available right now."}
         </p>
       )}

@@ -17,23 +17,19 @@ export function ChatPanel({
   retry,
   location,
 }: ReturnType<typeof useChat> & { location: LocationControl }) {
-
   return (
-    <section className="mx-auto flex h-full w-full max-w-2xl flex-col">
-      <header className="border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
-        <h1 className="text-xl font-bold">Haru</h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          Let your day shine, even in a new Korea
-        </p>
+    <section className="mx-auto flex h-full w-full max-w-2xl flex-col bg-paper">
+      <header className="px-5 pb-3 pt-5">
+        {/* 글자 사이를 넓힌 로고체 (STAYFOLIO 같은 느낌) */}
+        <h1 className="text-lg font-semibold uppercase tracking-[0.5em]">Haru</h1>
+        <p className="mt-1 text-xs text-mute">Let your day shine, even in a new Korea</p>
       </header>
 
-      <p className="bg-amber-50 px-4 py-2 text-xs text-amber-900 dark:bg-zinc-900 dark:text-amber-300">
-        ⓘ {MESSAGES.privacyNotice}
-      </p>
+      <p className="px-5 pb-2 text-xs text-mute">ⓘ {MESSAGES.privacyNotice}</p>
 
       <LocationBar {...location} />
 
-      <div className="flex-1 overflow-y-auto px-4 py-4">
+      <div className="flex-1 overflow-y-auto px-5 py-5">
         {messages.length === 0 ? (
           <WelcomeChips onPick={send} />
         ) : (
@@ -41,7 +37,7 @@ export function ChatPanel({
         )}
       </div>
 
-      <div className="border-t border-zinc-200 px-4 py-3 dark:border-zinc-800">
+      <div className="border-t border-line px-5 py-4">
         <ChatInput disabled={loading} onSend={send} />
       </div>
     </section>

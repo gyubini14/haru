@@ -17,36 +17,36 @@ export function ItineraryCard({ stops }: { stops: ItineraryStop[] }) {
   // 이동이 30분을 넘는 구간이 있으면 일정 맨 위에서 먼저 알린다 (각 구간에도 표시)
   const hasLongTrip = stops.some((s) => (s.travelToNext?.minutes ?? 0) > MAX_TRANSIT_MINUTES);
   return (
-    <ol className="space-y-3 rounded-xl border border-amber-200 bg-white p-3 text-sm dark:border-amber-900 dark:bg-zinc-900">
+    <ol className="space-y-5 rounded-2xl border border-line bg-paper p-4 text-sm leading-relaxed">
       {hasLongTrip && (
-        <li className="rounded-lg bg-amber-50 px-2 py-1 text-xs text-amber-900 dark:bg-zinc-800 dark:text-amber-300">
+        <li className="rounded-xl bg-soft px-3 py-2 text-xs text-warn">
           Note: some trips in this plan take longer than 30 minutes by public transit.
         </li>
       )}
       {stops.map((stop, i) => (
-        <li key={`${stop.time}-${stop.place.name}-${i}`} className="flex gap-2">
-          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-400 text-xs font-bold text-zinc-900">
+        <li key={`${stop.time}-${stop.place.name}-${i}`} className="flex gap-3">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ink text-xs font-semibold text-paper">
             {i + 1}
           </span>
           <div className="min-w-0">
-            <p className="text-xs font-semibold text-amber-700 dark:text-amber-400">{stop.time}</p>
-            <p className="font-semibold">
+            <p className="text-xs font-medium uppercase tracking-wider text-mute">{stop.time}</p>
+            <p className="text-base font-semibold tracking-tight">
               {stop.place.name}
               {stop.place.nameKo && (
-                <span className="ml-1.5 font-normal text-zinc-600 dark:text-zinc-300">{stop.place.nameKo}</span>
+                <span className="ml-2 text-sm font-normal text-mute">{stop.place.nameKo}</span>
               )}
             </p>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">{stop.place.area}</p>
-            <p className="mt-1">{stop.place.reason}</p>
-            <p className="mt-1 text-zinc-600 dark:text-zinc-300">{stop.place.howToGetThere}</p>
+            <p className="text-xs text-mute">{stop.place.area}</p>
+            <p className="mt-2">{stop.place.reason}</p>
+            <p className="mt-1 text-mute">{stop.place.howToGetThere}</p>
             {stop.place.sourceUrl && (
-              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              <p className="mt-2 text-xs text-mute">
                 Source:{" "}
                 <a
                   href={stop.place.sourceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline"
+                  className="text-ink underline underline-offset-2"
                 >
                   {siteName(stop.place.sourceUrl)}
                 </a>
@@ -54,12 +54,12 @@ export function ItineraryCard({ stops }: { stops: ItineraryStop[] }) {
               </p>
             )}
             {stop.place.mapNote && (
-              <p className="mt-1 text-xs text-zinc-500">
+              <p className="mt-2 text-xs text-mute">
                 Couldn&apos;t place this on the map: {stop.place.mapNote}
               </p>
             )}
             {stop.travelToNext && (
-              <p className="mt-2 text-xs font-medium text-zinc-600 dark:text-zinc-300">
+              <p className="mt-3 border-l border-line pl-3 text-xs font-medium text-mute">
                 ↓ {stop.travelToNext.minutes} min by {stop.travelToNext.mode}
                 {stop.travelToNext.minutes > MAX_TRANSIT_MINUTES &&
                   " (longer than 30 minutes, please check the route)"}

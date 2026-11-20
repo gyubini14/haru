@@ -10,15 +10,15 @@ const EXAMPLES = [
 
 export function WelcomeChips({ onPick }: { onPick: (text: string) => void }) {
   return (
-    <div className="space-y-4 py-6">
-      <p className="text-lg">{MESSAGES.welcome}</p>
+    <div className="space-y-6 py-6">
+      <p className="text-2xl font-semibold leading-snug tracking-tight">{MESSAGES.welcome}</p>
       <div className="flex flex-wrap gap-2">
         {EXAMPLES.map((text) => (
           <button
             key={text}
             type="button"
             onClick={() => onPick(text)}
-            className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1.5 text-left text-sm text-zinc-800 hover:bg-amber-100 dark:border-amber-800 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
+            className="rounded-full border border-line px-4 py-2 text-left text-sm transition-colors hover:border-ink"
           >
             {text}
           </button>

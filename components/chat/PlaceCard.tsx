@@ -18,46 +18,44 @@ function siteName(url: string): string {
 
 export function PlaceCard({ place, index }: PlaceCardProps) {
   return (
-    <div className="rounded-xl border border-amber-200 bg-white p-3 text-sm dark:border-amber-900 dark:bg-zinc-900">
-      <div className="flex items-start gap-2">
-        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-400 text-xs font-bold text-zinc-900">
+    <div className="rounded-2xl border border-line bg-paper p-4 text-sm leading-relaxed">
+      <div className="flex items-start gap-3">
+        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ink text-xs font-semibold text-paper">
           {index + 1}
         </span>
         <div className="min-w-0">
-          <p className="font-semibold">
+          <p className="text-base font-semibold tracking-tight">
             {place.name}
-            {place.nameKo && <span className="ml-1.5 font-normal text-zinc-600 dark:text-zinc-300">{place.nameKo}</span>}
+            {place.nameKo && (
+              <span className="ml-2 text-sm font-normal text-mute">{place.nameKo}</span>
+            )}
           </p>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">{place.area}</p>
+          <p className="text-xs text-mute">{place.area}</p>
         </div>
       </div>
       {place.source && (
-        <p className="mt-2 text-xs font-medium text-amber-700 dark:text-amber-400">
-          Filming location: {place.source}
+        <p className="mt-3 text-xs font-medium uppercase tracking-wider text-mute">
+          Filming location · {place.source}
         </p>
       )}
-      <p className="mt-2">{place.reason}</p>
-      <p className="mt-1 text-zinc-600 dark:text-zinc-300">{place.howToGetThere}</p>
-      {place.tip && <p className="mt-1 text-zinc-600 dark:text-zinc-300">Tip: {place.tip}</p>}
-      {place.source && (
-        <p className="mt-1 text-zinc-600 dark:text-zinc-300">{MESSAGES.filmingEtiquette}</p>
-      )}
-      {place.bookingTips && (
-        <p className="mt-1 text-zinc-600 dark:text-zinc-300">Booking tip: {place.bookingTips}</p>
-      )}
+      <p className="mt-3">{place.reason}</p>
+      <p className="mt-1 text-mute">{place.howToGetThere}</p>
+      {place.tip && <p className="mt-1 text-mute">Tip: {place.tip}</p>}
+      {place.source && <p className="mt-1 text-mute">{MESSAGES.filmingEtiquette}</p>}
+      {place.bookingTips && <p className="mt-1 text-mute">Booking tip: {place.bookingTips}</p>}
       {place.fromKoreanSource && (
-        <p className="mt-2 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-900 dark:bg-amber-950 dark:text-amber-200">
+        <p className="mt-3 inline-block rounded-full border border-line px-3 py-0.5 text-xs">
           Based on a Korean source
         </p>
       )}
       {place.sourceUrl ? (
-        <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="mt-3 text-xs text-mute">
           Source:{" "}
           <a
             href={place.sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="underline"
+            className="text-ink underline underline-offset-2"
           >
             {siteName(place.sourceUrl)}
           </a>
@@ -65,13 +63,11 @@ export function PlaceCard({ place, index }: PlaceCardProps) {
         </p>
       ) : (
         !place.verified && (
-          <p className="mt-2 text-xs text-amber-700 dark:text-amber-400">
-            Please verify the details before you go.
-          </p>
+          <p className="mt-3 text-xs text-warn">Please verify the details before you go.</p>
         )
       )}
       {place.mapNote && (
-        <p className="mt-2 text-xs text-zinc-500">
+        <p className="mt-3 text-xs text-mute">
           Couldn&apos;t place this on the map: {place.mapNote}
         </p>
       )}

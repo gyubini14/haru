@@ -20,25 +20,25 @@ export function MessageList({ messages, loading, error, onRetry }: MessageListPr
   }, [messages, loading, error]);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {messages.map((m) => (
         <MessageBubble key={m.id} message={m} />
       ))}
       {loading && (
-        <p className="text-sm text-zinc-500 dark:text-zinc-400" role="status">
+        <p className="text-sm text-mute" role="status">
           Haru is thinking…
         </p>
       )}
       {error && (
         <div
-          className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200"
+          className="flex items-center gap-3 rounded-2xl bg-danger-soft px-4 py-3 text-sm text-danger"
           role="alert"
         >
           <span className="flex-1">{error}</span>
           <button
             type="button"
             onClick={onRetry}
-            className="rounded-lg bg-red-600 px-3 py-1 text-white"
+            className="rounded-full border border-danger px-4 py-1 font-medium"
           >
             Try again
           </button>

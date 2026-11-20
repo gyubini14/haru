@@ -32,7 +32,7 @@ export function HaruApp() {
 
   return (
     <main className="flex h-dvh flex-col lg:flex-row-reverse">
-      <div className="h-44 shrink-0 border-b border-zinc-200 lg:h-auto lg:flex-1 lg:border-b-0 lg:border-l dark:border-zinc-800">
+      <div className="h-44 shrink-0 border-b border-line lg:h-auto lg:flex-1 lg:border-b-0 lg:border-l">
         <MapView places={latestPlaces} />
       </div>
       <div className="min-h-0 flex-1 lg:max-w-2xl lg:flex-none lg:basis-[42rem]">
