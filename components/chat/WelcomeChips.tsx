@@ -3,7 +3,7 @@ import { MESSAGES } from "@/lib/messages";
 // 처음 화면에 보이는 예시 질문 (누르면 바로 질문으로 보낸다)
 const EXAMPLES = [
   "Where can I find good local food near Hongdae?",
-  "Which K-drama filming spots can I visit in Seoul?",
+  "Where was Crash Landing on You filmed?",
   "Where can I take pretty photos in Busan?",
   "How do I get from Incheon Airport to Myeongdong?",
 ];

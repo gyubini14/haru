@@ -30,6 +30,18 @@ export const MESSAGES = {
         : `${missing.slice(0, -1).join(", ")} and ${missing[missing.length - 1]}`;
     return `To recommend a place to stay, could you tell me ${list}?`;
   },
+  /** PRD M2 규칙 3: 웹 검색으로 확인된 촬영지가 없을 때 ("정보가 없습니다") */
+  noFilmingLocations:
+    "I couldn't find confirmed filming locations for that. You could try another drama, film or artist.",
+  /** 설계 제안: AI가 방문 팁을 비워 두었을 때 촬영지 카드에 쓰는 일반 팁 (PRD M2 규칙 2) */
+  defaultFilmingTip:
+    "Check access and visiting hours before you go, because filming spots can change or close.",
+  /** 설계 제안: 촬영지 질문에서 작품·가수를 말하지 않았을 때 되묻는 문구 */
+  askWhichWork:
+    "Which drama, film or artist are you interested in? Tell me a title or a name and I'll look for its filming locations.",
+  /** PRD M2 규칙 4: 촬영지에는 이웃을 배려하라는 주의사항을 함께 전달 */
+  filmingEtiquette:
+    "Please be quiet and respectful of nearby residents, and do not enter private property or film without permission.",
   /** PRD 7번: 출처 확인 안내 */
   checkSource:
     "Please check the original source for terms and latest details.",

@@ -19,7 +19,8 @@ const placeSchema = z.object({
   reason: z.string(),
   how_to_get_there: z.string(),
   tip: z.string().nullable(),
-  source: z.string().nullable(),
+  // 촬영지 질문에서만 쓰는 작품·가수 이름. (출처 주소 source_url과 헷갈리지 않게 이름을 work_name으로 한다)
+  work_name: z.string().nullable(),
   // 출처 주소는 반드시 적게 한다. 적을 수 없는 장소는 추천하지 않도록 지침에 정해 두었다.
   source_url: z.string(),
   booking_tips: z.string().nullable(),
@@ -125,17 +126,36 @@ function toPlainText(text: string): string {
  * AI가 적은 장소 중, 출처 주소가 실제 웹 검색 결과에 있는 것만 "확인됨"으로 인정한다.
  * (PRD 5번 M1 규칙 5·8: 웹 검색에서 확인하지 못한 장소는 보여 주지 않는다.)
  */
-function toVerifiedPlace(p: ModelAnswer["places"][number], searched: Set<string>): Place | null {
+function toVerifiedPlace(
+  p: ModelAnswer["places"][number],
+  searched: Set<string>,
+  isFilming: boolean,
+  namedWork: string | null,
+): Place | null {
   const sourceUrl = normalizeUrl(p.source_url);
   if (!sourceUrl || !searched.has(sourceUrl)) return null;
+
+  let tip = toPlainText(p.tip ?? "") || null;
+  // 작품·가수 이름: AI가 적은 값을 우선하고, 비어 있으면 사용자가 말한 이름(분류 단계)을 쓴다.
+  const work = toPlainText(p.work_name ?? "") || namedWork;
+  // PRD M2 규칙 2: 촬영지는 방문 팁이 반드시 있어야 한다. AI가 비우거나 "please verify" 같은 빈말을 쓰면
+  // (실험에서 자주 그랬다) 장소를 버리지 않고 일반적인 안전한 팁으로 채운다.
+  if (isFilming && (!tip || tip.length < 15 || /^please verify/i.test(tip))) {
+    tip = MESSAGES.defaultFilmingTip;
+  }
+  // 어느 작품·가수의 촬영지인지 알 수 없는 장소는 촬영지로 안내하지 않는다. (그냥 유명 관광지를 촬영지라고 소개하는 것을 막음)
+  if (isFilming && !work) return null;
+  // 장소 이름이 작품·노래 제목과 같으면 실제 장소가 아니라 제목을 장소처럼 적은 것이므로 제외한다.
+  if (isFilming && work && toPlainText(p.name).toLowerCase() === work.toLowerCase()) return null;
+
   return {
     name: toPlainText(p.name),
     area: toPlainText(p.area),
     reason: toPlainText(p.reason),
     howToGetThere: toPlainText(p.how_to_get_there),
-    tip: toPlainText(p.tip ?? "") || null,
-    // 작품·가수 이름(source)은 촬영지 안내(작업 9)에서 쓴다. AI가 글 제목 같은 엉뚱한 값을 넣기도 해서 그전에는 비워 둔다.
-    source: null,
+    tip,
+    // 작품·가수 이름(source)은 촬영지 질문에서만 쓴다. 다른 질문에서는 AI가 글 제목 같은 엉뚱한 값을 넣기도 해서 비운다.
+    source: isFilming ? work : null,
     verified: true,
     sourceUrl,
     fromKoreanSource: isKoreanSite(sourceUrl),
@@ -147,20 +167,31 @@ function toVerifiedPlace(p: ModelAnswer["places"][number], searched: Set<string>
 }
 
 /** AI 답변을 화면용 응답으로 바꾼다. 확인된 장소만 최대 3곳 남긴다. */
-function toChatResponse(answer: ModelAnswer, searched: Set<string>): ChatResponse {
+function toChatResponse(
+  answer: ModelAnswer,
+  searched: Set<string>,
+  isFilming: boolean,
+  namedWork: string | null,
+): ChatResponse {
   // 되묻기 답변에는 장소 카드를 붙이지 않는다.
   if (answer.kind !== "answer") {
     return { kind: answer.kind, reply: toPlainText(answer.reply), places: [], itinerary: null };
   }
 
   const places = answer.places
-    .map((p) => toVerifiedPlace(p, searched))
+    .map((p) => toVerifiedPlace(p, searched, isFilming, namedWork))
     .filter((p): p is Place => p !== null)
     .slice(0, MAX_ANSWER_PLACES);
 
-  // 장소를 추천하려 했지만 확인된 곳이 하나도 없으면, 지어낸 장소를 보여 주지 않고 되묻는다.
+  // 장소를 추천하려 했지만 확인된 곳이 하나도 없으면, 지어낸 장소를 보여 주지 않는다.
+  // 촬영지는 "확인된 정보가 없다"고 알리고(PRD M2 규칙 3), 그 외에는 되묻는다.
   if (answer.places.length > 0 && places.length === 0) {
-    return { kind: "clarify", reply: MESSAGES.noConfirmedPlaces, places: [], itinerary: null };
+    return {
+      kind: isFilming ? "answer" : "clarify",
+      reply: isFilming ? MESSAGES.noFilmingLocations : MESSAGES.noConfirmedPlaces,
+      places: [],
+      itinerary: null,
+    };
   }
   return { kind: answer.kind, reply: toPlainText(answer.reply), places, itinerary: null };
 }
@@ -170,6 +201,10 @@ function answerFromTriage(t: Triage): ChatResponse | null {
   // M1 규칙 7: 영어가 아닌 질문에는 내용에 답하지 않고 고정 안내만 보낸다.
   if (!t.is_english) {
     return { kind: "refusal", reply: MESSAGES.askInEnglish, places: [], itinerary: null };
+  }
+  // 촬영지 질문인데 어느 작품·가수인지 모르면 검색하지 않고 먼저 묻는다. (PRD M2: 작품이나 가수 이름을 입력하면 안내)
+  if (t.topic === "filming_location" && !t.named_work) {
+    return { kind: "clarify", reply: MESSAGES.askWhichWork, places: [], itinerary: null };
   }
   // 인사에는 검색 없이 환영 문구로 답한다.
   if (t.topic === "greeting") {
@@ -217,11 +252,13 @@ export async function askHaru(messages: ChatMessage[]): Promise<ChatResponse> {
   const early = answerFromTriage(classified);
   if (early) return early;
 
-  // 2단계: 웹 검색을 쓰는 답변. 숙소는 한국어 검색어로도 한국인 후기를 찾게 한다.
-  const koreanQuery = classified.topic === "accommodation" ? classified.korean_search_query : null;
+  // 2단계: 웹 검색을 쓰는 답변. 숙소·촬영지는 한국어 검색어로도 한국 사이트를 찾게 한다.
+  const isFilming = classified.topic === "filming_location";
+  const koreanQuery =
+    classified.topic === "accommodation" || isFilming ? classified.korean_search_query : null;
   const response = await getOpenAIClient().responses.create({
     model: OPENAI_MODEL,
-    instructions: buildInstructions(),
+    instructions: buildInstructions(isFilming),
     input: withKoreanSearch(messages, koreanQuery),
     tools: [{ type: "web_search", user_location: { type: "approximate", country: "KR" } }],
     include: ["web_search_call.action.sources"],
@@ -243,5 +280,6 @@ export async function askHaru(messages: ChatMessage[]): Promise<ChatResponse> {
   if (!answer.reply.trim() && answer.places.length === 0) {
     throw new Error("empty answer");
   }
-  return toChatResponse(answer, collectSearchedUrls(response));
+  const namedWork = isFilming ? toPlainText(classified.named_work ?? "") || null : null;
+  return toChatResponse(answer, collectSearchedUrls(response), isFilming, namedWork);
 }

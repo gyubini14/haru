@@ -22,8 +22,10 @@ const triageSchema = z.object({
   area_known: z.boolean(),
   budget_known: z.boolean(),
   guests_known: z.boolean(),
-  /** 숙소 질문일 때, 한국인 블로그·커뮤니티·예약 사이트 후기를 찾기 위한 한국어 검색어 */
+  /** 숙소·촬영지 질문일 때, 한국인 블로그·커뮤니티·후기를 찾기 위한 한국어 검색어 */
   korean_search_query: z.string().nullable(),
+  /** 촬영지 질문에서 사용자가 말한 드라마·영화·가수·그룹의 영어 이름 (없으면 null) */
+  named_work: z.string().nullable(),
 });
 
 export type Triage = z.infer<typeof triageSchema>;

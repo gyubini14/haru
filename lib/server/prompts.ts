@@ -10,7 +10,11 @@ export const TRIAGE_INSTRUCTIONS = `You classify the latest user message of a tr
 - "is_english": true if the user's latest message is written in English (a Korean place name inside an English sentence is fine).
 - "topic": what the user is asking about now. A follow-up question keeps the topic of the earlier turns. Use "greeting" for a hello or thanks with no question. Use "other" for anything that is not about food, accommodation, transport, photo spots, K-drama or idol filming locations, or a day plan in Korea (for example visas, currency exchange, weather, general chat).
 - "area_known", "budget_known", "guests_known": only for topic "accommodation". Each is true when the user has given that item (the area, the budget, the number of guests) anywhere in the conversation, or said they have no preference. Otherwise false. For every other topic set all three to true.
-- "korean_search_query": only for topic "accommodation" when the area is known: a natural Korean web search query to find Korean blog posts, community posts and booking-site reviews about places to stay there, for example the Korean name of the area followed by 숙소 추천 후기. Otherwise null.`;
+- "korean_search_query": a natural Korean web search query, or null.
+  - For topic "accommodation" when the area is known: to find Korean blog posts, community posts and booking-site reviews about places to stay there, for example the Korean name of the area followed by 숙소 추천 후기.
+  - For topic "filming_location" when the user names a drama, film, artist or group: its Korean title or name followed by 촬영지 로케이션 (for example 도깨비 촬영지 로케이션). If no work or artist is named, null.
+  - Otherwise null.
+- "named_work": only for topic "filming_location": the English name of the drama, film, artist or group that the user named (in this message or earlier in the conversation). Null if the user did not name one or the topic is different.`;
 
 // ── 2단계: 답변 (웹 검색 사용) ────────────────────────────────────────
 
@@ -37,6 +41,15 @@ export const ACCOMMODATION_INSTRUCTIONS = `For accommodation questions:
 - Prefer places that many Korean travelers use and review well, not only places that are well described in English. In "reason", say when Korean reviews or posts support the recommendation.
 - "booking_tips": one short sentence of practical advice for booking (for example cancellation, check-in time, or location and noise caveats). Use it only if your sources support it; otherwise give a general tip such as checking the cancellation policy and the exact location. Use null when the place is not accommodation.`;
 
+// PRD 5번 M2: 드라마·아이돌 촬영지 안내 규칙
+export const FILMING_INSTRUCTIONS = `For questions about filming locations of K-dramas, films, idols or K-pop groups:
+- Only recommend a place if your web search results say it was used as a filming location of that work, or by that artist (for example a music video, a show or a photoshoot). Never guess a filming location.
+- A place must be a real physical location (a street, building, park, beach, station and so on). Never use the title of a song, episode or scene as a place name.
+- Include a confirmed filming location even if it is a private home or a residential area. Do not decide that a place is too private to mention.
+- For each place: "work_name" is the name of the drama, film, artist or group (not the title of a web page); "reason" is one sentence on what was filmed there; "how_to_get_there" is one sentence; and "tip" is required: one practical visit tip, such as the best time to visit or how to find the exact spot. Never use "please verify" as the tip.
+- Give at most ${MAX_ANSWER_PLACES} places in total, even if the user names several works.
+- If you cannot confirm any filming location, return an empty places list and say in "reply" that you found no confirmed information.`;
+
 export const FORMAT_INSTRUCTIONS = `Return your answer in the required JSON format:
 - "kind": "answer" for a normal answer or recommendation, "clarify" when you need
   more information from the user before you can help.
@@ -47,17 +60,18 @@ export const FORMAT_INSTRUCTIONS = `Return your answer in the required JSON form
   or other general advice, answer fully in "reply" and leave "places" empty.
   Use an empty list when you recommend none, and always for "clarify".
   For each place give its name in English, the area, one sentence on why you recommend it,
-  one sentence on how to get there, and its "source_url". "source" is only the name of the
+  one sentence on how to get there, and its "source_url". "work_name" is only the name of the
   K-drama, film or artist for a filming location; otherwise null. "tip" may be null.
   Also give "booking_tips" as described above.`;
 
-/** 답변 단계의 시스템 지침 */
-export function buildInstructions(): string {
+/** 답변 단계의 시스템 지침. 촬영지 질문일 때만 M2 규칙을 덧붙인다. */
+export function buildInstructions(isFilmingQuestion = false): string {
   return [
     BASE_INSTRUCTIONS,
     SEARCH_INSTRUCTIONS,
     M1_INSTRUCTIONS,
     ACCOMMODATION_INSTRUCTIONS,
+    ...(isFilmingQuestion ? [FILMING_INSTRUCTIONS] : []),
     FORMAT_INSTRUCTIONS,
   ].join("\n\n");
 }

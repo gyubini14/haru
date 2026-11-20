@@ -30,12 +30,15 @@ export function PlaceCard({ place, index }: PlaceCardProps) {
       </div>
       {place.source && (
         <p className="mt-2 text-xs font-medium text-amber-700 dark:text-amber-400">
-          {place.source}
+          Filming location: {place.source}
         </p>
       )}
       <p className="mt-2">{place.reason}</p>
       <p className="mt-1 text-zinc-600 dark:text-zinc-300">{place.howToGetThere}</p>
       {place.tip && <p className="mt-1 text-zinc-600 dark:text-zinc-300">Tip: {place.tip}</p>}
+      {place.source && (
+        <p className="mt-1 text-zinc-600 dark:text-zinc-300">{MESSAGES.filmingEtiquette}</p>
+      )}
       {place.bookingTips && (
         <p className="mt-1 text-zinc-600 dark:text-zinc-300">Booking tip: {place.bookingTips}</p>
       )}
