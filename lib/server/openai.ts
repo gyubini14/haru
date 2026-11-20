@@ -12,7 +12,7 @@ import {
 } from "@/lib/constants";
 import { MESSAGES } from "@/lib/messages";
 import { getOpenAIClient } from "@/lib/server/openaiClient";
-import { attachPositions, describeLocation } from "@/lib/server/places";
+import { attachPositions, describeLocation, locateRoute } from "@/lib/server/places";
 import { buildInstructions } from "@/lib/server/prompts";
 import { fixTravelTimes } from "@/lib/server/travel";
 import { triage, type Triage } from "@/lib/server/triage";
@@ -380,8 +380,17 @@ export async function askHaru(
   }
 
   // 확인된 장소의 좌표를 Google 장소 검색으로 채운다 (실패해도 답변은 그대로 보낸다)
-  const placed = await attachPositions(chat.places);
-  if (!location) return { ...chat, places: placed };
+  const [placed, route] = await Promise.all([
+    attachPositions(chat.places),
+    // 교통 질문의 출발지·도착지도 좌표를 찾는다 (지도에 A, B 마커로만 표시)
+    chat.kind === "answer" && classified.topic === "transport" && classified.route
+      ? locateRoute({
+          from: { name: classified.route.from_name, area: classified.route.from_area },
+          to: { name: classified.route.to_name, area: classified.route.to_area },
+        })
+      : Promise.resolve(null),
+  ]);
+  if (!location) return { ...chat, places: placed, route };
 
   // 내 위치를 켠 경우: 반경 2km 안에 있다고 확인된 장소만 남긴다. (AI 지침만 믿지 않고 코드가 거리를 확인)
   const nearby = placed.filter(
@@ -390,5 +399,5 @@ export async function askHaru(
   if (placed.length > 0 && nearby.length === 0) {
     return { kind: "answer", reply: MESSAGES.noPlacesNearby, places: [], itinerary: null };
   }
-  return { ...chat, places: nearby };
+  return { ...chat, places: nearby, route };
 }

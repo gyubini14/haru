@@ -26,6 +26,15 @@ const triageSchema = z.object({
   korean_search_query: z.string().nullable(),
   /** 촬영지 질문에서 사용자가 말한 드라마·영화·가수·그룹의 영어 이름 (없으면 null) */
   named_work: z.string().nullable(),
+  /** 교통 질문에서 출발지와 도착지가 둘 다 분명할 때만 채운다. 지도에 A, B 마커로 표시한다 (이동 경로선은 없다) */
+  route: z
+    .object({
+      from_name: z.string(),
+      from_area: z.string(),
+      to_name: z.string(),
+      to_area: z.string(),
+    })
+    .nullable(),
 });
 
 export type Triage = z.infer<typeof triageSchema>;

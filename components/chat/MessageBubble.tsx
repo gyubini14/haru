@@ -1,6 +1,7 @@
 import type { UiMessage } from "@/hooks/useChat";
 import { ItineraryCard } from "@/components/chat/ItineraryCard";
 import { PlaceCard } from "@/components/chat/PlaceCard";
+import { RouteEnds } from "@/components/chat/RouteEnds";
 
 export function MessageBubble({ message }: { message: UiMessage }) {
   const isUser = message.role === "user";
@@ -18,6 +19,7 @@ export function MessageBubble({ message }: { message: UiMessage }) {
         >
           {message.content}
         </div>
+        {response?.route && <RouteEnds route={response.route} />}
         {stops.length > 0 ? (
           <ItineraryCard stops={stops} />
         ) : (

@@ -6,7 +6,7 @@
 import { importLibrary, setOptions } from "@googlemaps/js-api-loader";
 import { useEffect, useRef, useState } from "react";
 import { MAX_MAP_PLACES } from "@/lib/constants";
-import type { Place } from "@/lib/types";
+import type { Position } from "@/lib/types";
 
 // 처음 보여 주는 위치: 서울 시청 근처
 const DEFAULT_CENTER = { lat: 37.5665, lng: 126.978 };
@@ -28,12 +28,19 @@ type Status = "loading" | "ready" | "unavailable";
 
 const MAPS_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-interface MapViewProps {
-  /** 가장 최근 답변의 장소. 좌표가 있는 것만 마커로 올리고, 번호는 장소 카드 번호와 같다. */
-  places: Place[];
+/** 지도에 올릴 한 지점. 라벨은 장소 카드 번호(1, 2, 3…)나 출발지·도착지(A, B)다. */
+export interface MapPoint {
+  position: Position;
+  label: string;
+  title: string;
 }
 
-export function MapView({ places }: MapViewProps) {
+interface MapViewProps {
+  /** 가장 최근 답변의 지점들. 좌표가 있는 것만 마커로 올린다. */
+  points: MapPoint[];
+}
+
+export function MapView({ points }: MapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
@@ -86,13 +93,12 @@ export function MapView({ places }: MapViewProps) {
     markersRef.current = [];
 
     const bounds = new google.maps.LatLngBounds();
-    places.slice(0, MAX_MAP_PLACES).forEach((place, index) => {
-      if (!place.position) return;
+    points.slice(0, MAX_MAP_PLACES).forEach((point) => {
       const marker = new google.maps.Marker({
         map,
-        position: place.position,
-        title: place.name,
-        // 장소 카드의 번호와 같은 번호를 검은 원 안에 표시한다
+        position: point.position,
+        title: point.title,
+        // 장소 카드의 번호(또는 출발지 A·도착지 B)를 검은 원 안에 표시한다
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
           scale: 13,
@@ -101,10 +107,10 @@ export function MapView({ places }: MapViewProps) {
           strokeColor: "#ffffff",
           strokeWeight: 2,
         },
-        label: { text: String(index + 1), color: "#ffffff", fontWeight: "600", fontSize: "12px" },
+        label: { text: point.label, color: "#ffffff", fontWeight: "600", fontSize: "12px" },
       });
       markersRef.current.push(marker);
-      bounds.extend(place.position);
+      bounds.extend(point.position);
     });
 
     const count = markersRef.current.length;
@@ -114,7 +120,7 @@ export function MapView({ places }: MapViewProps) {
     } else if (count > 1) {
       map.fitBounds(bounds, 48);
     }
-  }, [map, places]);
+  }, [map, points]);
 
   return (
     <div className="relative h-full w-full bg-soft">

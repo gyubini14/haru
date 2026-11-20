@@ -20,7 +20,8 @@ export const TRIAGE_INSTRUCTIONS = `You classify the latest user message of a tr
   - For topic "accommodation" when the area is known: to find Korean blog posts, community posts and booking-site reviews about places to stay there, for example the Korean name of the area followed by 숙소 추천 후기.
   - For topic "filming_location" when the user names a drama, film, artist or group: its Korean title or name followed by 촬영지 로케이션 (for example 도깨비 촬영지 로케이션). If no work or artist is named, null.
   - Otherwise null.
-- "named_work": only for topic "filming_location": the English name of the drama, film, artist or group that the user named (in this message or earlier in the conversation). Null if the user did not name one or the topic is different.`;
+- "named_work": only for topic "filming_location": the English name of the drama, film, artist or group that the user named (in this message or earlier in the conversation). Null if the user did not name one or the topic is different.
+- "route": only for topic "transport", when the user asks how to get from one specific place to another and both the start and the destination are clear (in this message or earlier in the conversation). Give each as a place name in English (an airport, a station, a landmark, a hotel area) and its area or city, for example from_name "Incheon International Airport", from_area "Incheon". Never guess or invent a start or a destination that the user did not mention: if the user names only one of them (for example "How do I get to Gyeongbokgung Palace?"), or says only "here" or "my hotel", use null. If either one is not clear, or the question is not about getting from one place to another, use null.`;
 
 // ── 2단계: 답변 (웹 검색 사용) ────────────────────────────────────────
 

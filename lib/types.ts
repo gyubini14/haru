@@ -69,11 +69,27 @@ export interface ChatRequest {
   location?: Position;
 }
 
+/** 교통 질문("A에서 B까지")의 출발지·도착지. 지도에 마커 A, B로만 표시한다 (이동 경로선은 그리지 않는다) */
+export interface RoutePoint {
+  name: string;
+  nameKo: string | null;
+  area: string;
+  /** 좌표를 확인하지 못하면 null (지도에 표시하지 않는다) */
+  position: Position | null;
+}
+
+export interface RouteEnds {
+  from: RoutePoint;
+  to: RoutePoint;
+}
+
 export interface ChatResponse {
   kind: ChatKind;
   reply: string;
   places: Place[];
   itinerary: { stops: ItineraryStop[] } | null;
+  /** 교통 질문일 때만 있다 */
+  route?: RouteEnds | null;
 }
 
 export interface ApiError {

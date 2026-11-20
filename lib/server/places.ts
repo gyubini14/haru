@@ -6,7 +6,7 @@ import { MAX_MAP_PLACES } from "@/lib/constants";
 // 한국 밖 좌표는 엉뚱한 나라의 같은 이름 장소이므로 걸러낸다
 import { distanceKm, isInKorea } from "@/lib/geo";
 import { MESSAGES } from "@/lib/messages";
-import type { Place, PlacePhoto, Position } from "@/lib/types";
+import type { Place, PlacePhoto, Position, RouteEnds, RoutePoint } from "@/lib/types";
 
 const TEXT_SEARCH_URL = "https://places.googleapis.com/v1/places:searchText";
 const PLACES_TIMEOUT_MS = 5000;
@@ -259,4 +259,23 @@ export async function attachPositions(places: Place[]): Promise<Place[]> {
         : { ...place, position: null, mapNote: MESSAGES.noMapLocation };
     }),
   );
+}
+
+/**
+ * 교통 질문의 출발지·도착지 좌표를 찾는다. 둘 중 하나라도 AI가 정하지 않았으면 null.
+ * 좌표를 못 찾은 쪽은 position=null로 두어 지도에 표시하지 않는다. (이동 경로선은 그리지 않는다)
+ */
+export async function locateRoute(
+  route: { from: { name: string; area: string }; to: { name: string; area: string } } | null,
+): Promise<RouteEnds | null> {
+  if (!route) return null;
+  // 출발지나 도착지가 분명하지 않을 때 AI가 "unknown" 같은 말을 적는 경우가 있어, 그때는 표시하지 않는다
+  const unclear = (n: string) => !n.trim() || /unknown|unspecified|not\s+(specified|clear|given)|n\/a|\bnone\b|current location|my location/i.test(n);
+  if (unclear(route.from.name) || unclear(route.to.name)) return null;
+  const locate = async (p: { name: string; area: string }): Promise<RoutePoint> => {
+    const found = await findPosition(p.name, p.area, await findArea(p.area));
+    return { name: p.name, nameKo: found?.nameKo ?? null, area: p.area, position: found?.position ?? null };
+  };
+  const [from, to] = await Promise.all([locate(route.from), locate(route.to)]);
+  return { from, to };
 }
