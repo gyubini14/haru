@@ -7,6 +7,7 @@ import {
 } from "@/lib/constants";
 import { MESSAGES } from "@/lib/messages";
 import { getOpenAIClient } from "@/lib/server/openaiClient";
+import { attachPositions } from "@/lib/server/places";
 import { buildInstructions } from "@/lib/server/prompts";
 import { triage, type Triage } from "@/lib/server/triage";
 import type { ChatMessage, ChatResponse, Place } from "@/lib/types";
@@ -281,5 +282,7 @@ export async function askHaru(messages: ChatMessage[]): Promise<ChatResponse> {
     throw new Error("empty answer");
   }
   const namedWork = isFilming ? toPlainText(classified.named_work ?? "") || null : null;
-  return toChatResponse(answer, collectSearchedUrls(response), isFilming, namedWork);
+  const chat = toChatResponse(answer, collectSearchedUrls(response), isFilming, namedWork);
+  // 확인된 장소의 좌표를 Google 장소 검색으로 채운다 (실패해도 답변은 그대로 보낸다)
+  return { ...chat, places: await attachPositions(chat.places) };
 }

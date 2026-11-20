@@ -42,6 +42,8 @@ export const MESSAGES = {
   /** PRD M2 규칙 4: 촬영지에는 이웃을 배려하라는 주의사항을 함께 전달 */
   filmingEtiquette:
     "Please be quiet and respectful of nearby residents, and do not enter private property or film without permission.",
+  /** PRD 5번: Google 장소 검색으로 좌표를 확인하지 못했을 때 장소 카드 아래에 보이는 이유 */
+  noMapLocation: "its exact location could not be confirmed.",
   /** PRD 7번: 출처 확인 안내 */
   checkSource:
     "Please check the original source for terms and latest details.",
