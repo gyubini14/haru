@@ -14,6 +14,45 @@ const DEFAULT_ZOOM = 11;
 // 장소가 한 곳일 때 확대 정도
 const SINGLE_PLACE_ZOOM = 15;
 
+// 표시할 위치가 없을 때(검색 전, 새 대화)는 채도를 낮춘 흑백 지도, 위치를 표시하는 동안은 기본 컬러 지도
+const IDLE_MAP_STYLES: google.maps.MapTypeStyle[] = [
+  { stylers: [{ saturation: -100 }, { lightness: 4 }] },
+  { featureType: "poi.business", stylers: [{ visibility: "off" }] },
+  { featureType: "transit", elementType: "labels.icon", stylers: [{ visibility: "off" }] },
+  { featureType: "water", stylers: [{ color: "#dcdcdc" }] },
+];
+
+// 마커 모양: 번호가 들어간 검은 원. 커서를 올리면 조금 커진다.
+function markerIcon(scale: number): google.maps.Symbol {
+  return {
+    path: google.maps.SymbolPath.CIRCLE,
+    scale,
+    fillColor: "#181818",
+    fillOpacity: 1,
+    strokeColor: "#ffffff",
+    strokeWeight: 2,
+  };
+}
+const MARKER_SCALE = 13;
+const MARKER_SCALE_HOVER = 16;
+
+/** 마커 위에 보여 줄 하얀 텍스트 블록: 영어 이름과 한글 이름. (글은 textContent로만 넣어 HTML로 해석하지 않는다) */
+function tooltipContent(point: MapPoint): HTMLElement {
+  const box = document.createElement("div");
+  box.style.cssText =
+    "background:#fff;color:#181818;padding:2px 4px;font:600 14px/1.35 system-ui,sans-serif;white-space:nowrap";
+  const en = document.createElement("div");
+  en.textContent = point.title;
+  box.append(en);
+  if (point.nameKo) {
+    const ko = document.createElement("div");
+    ko.textContent = point.nameKo;
+    ko.style.cssText = "font-weight:400;font-size:13px;color:#767676";
+    box.append(ko);
+  }
+  return box;
+}
+
 let optionsSet = false;
 
 type Status = "loading" | "ready" | "unavailable";
@@ -24,7 +63,10 @@ const MAPS_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 export interface MapPoint {
   position: Position;
   label: string;
+  /** 영어 이름 */
   title: string;
+  /** 한글 이름 (모르면 null) */
+  nameKo: string | null;
 }
 
 interface MapViewProps {
@@ -36,6 +78,7 @@ export function MapView({ points }: MapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
+  const infoRef = useRef<google.maps.InfoWindow | null>(null);
   // 키가 없으면 처음부터 "사용 불가"로 시작한다
   const [status, setStatus] = useState<Status>(MAPS_KEY ? "loading" : "unavailable");
 
@@ -61,6 +104,8 @@ export function MapView({ points }: MapViewProps) {
           streetViewControl: false,
           mapTypeControl: false,
           fullscreenControl: false,
+          // 처음에는 위치를 표시하기 전이므로 흑백 (표시할 위치가 생기면 아래 효과에서 컬러로 바꾼다)
+          styles: IDLE_MAP_STYLES,
         });
         setMap(created);
         setStatus("ready");
@@ -79,32 +124,60 @@ export function MapView({ points }: MapViewProps) {
   useEffect(() => {
     if (!map) return;
 
-    for (const marker of markersRef.current) marker.setMap(null);
+    // 이전 마커와 이름 블록을 치운다
+    infoRef.current?.close();
+    for (const marker of markersRef.current) {
+      google.maps.event.clearInstanceListeners(marker);
+      marker.setMap(null);
+    }
     markersRef.current = [];
+
+    // 표시할 위치가 있으면 컬러, 없으면 흑백
+    map.setOptions({ styles: points.length > 0 ? null : IDLE_MAP_STYLES });
+    if (!infoRef.current) {
+      infoRef.current = new google.maps.InfoWindow({
+        headerDisabled: true,
+        disableAutoPan: true,
+        pixelOffset: new google.maps.Size(0, -12),
+      });
+    }
+    const info = infoRef.current;
 
     const bounds = new google.maps.LatLngBounds();
     points.slice(0, MAX_MAP_PLACES).forEach((point) => {
       const marker = new google.maps.Marker({
         map,
         position: point.position,
-        title: point.title,
         // 장소 카드의 번호(또는 출발지 A·도착지 B)를 검은 원 안에 표시한다
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 13,
-          fillColor: "#181818",
-          fillOpacity: 1,
-          strokeColor: "#ffffff",
-          strokeWeight: 2,
-        },
+        icon: markerIcon(MARKER_SCALE),
         label: { text: point.label, color: "#ffffff", fontWeight: "600", fontSize: "12px" },
+        zIndex: 1,
       });
+      // 커서를 올리면 마커가 커지고 이름 블록이 뜬다. (터치 화면에서는 누르면 열고 닫는다)
+      const show = () => {
+        marker.setIcon(markerIcon(MARKER_SCALE_HOVER));
+        marker.setZIndex(10);
+        info.setContent(tooltipContent(point));
+        info.open({ map, anchor: marker });
+      };
+      const hide = () => {
+        marker.setIcon(markerIcon(MARKER_SCALE));
+        marker.setZIndex(1);
+        info.close();
+      };
+      marker.addListener("mouseover", show);
+      marker.addListener("mouseout", hide);
+      marker.addListener("click", show);
       markersRef.current.push(marker);
       bounds.extend(point.position);
     });
 
     const count = markersRef.current.length;
-    if (count === 1) {
+    if (count === 0) {
+      // 표시할 위치가 없으면 처음 화면(서울 중심)으로 돌아간다
+      map.setCenter(DEFAULT_CENTER);
+      map.setZoom(DEFAULT_ZOOM);
+    } else if (count === 1) {
       map.setCenter(bounds.getCenter());
       map.setZoom(SINGLE_PLACE_ZOOM);
     } else if (count > 1) {

@@ -23,7 +23,9 @@ function latestMapPoints(messages: UiMessage[]): MapPoint[] {
     const response = m.response;
     const toPoints = (places: Place[]): MapPoint[] =>
       places.flatMap((p, index) =>
-        p.position ? [{ position: p.position, label: String(index + 1), title: p.name }] : [],
+        p.position
+          ? [{ position: p.position, label: String(index + 1), title: p.name, nameKo: p.nameKo }]
+          : [],
       );
     const stops = response?.itinerary?.stops;
     if (stops && stops.length > 0) return toPoints(stops.map((s) => s.place));
@@ -33,7 +35,9 @@ function latestMapPoints(messages: UiMessage[]): MapPoint[] {
         { end: route.from, label: "A" },
         { end: route.to, label: "B" },
       ].flatMap(({ end, label }) =>
-        end.position ? [{ position: end.position, label, title: end.name }] : [],
+        end.position
+          ? [{ position: end.position, label, title: end.name, nameKo: end.nameKo }]
+          : [],
       );
     }
     return toPoints(response?.places ?? []);
