@@ -13,6 +13,20 @@ export const MESSAGES = {
   /** 설계 제안: 웹 검색으로 확인된 장소가 하나도 없을 때 */
   noConfirmedPlaces:
     "I couldn't confirm specific places for that yet. Could you tell me the area or what you're looking for?",
+  /** 설계 제안: 숙소 추천에 필요한 정보 (PRD M1 규칙 4) */
+  accommodationItems: {
+    area: "the area you'd like to stay in",
+    budget: "your budget per night",
+    guests: "the number of guests",
+  },
+  /** 설계 제안: 빠진 정보를 모두 한 번에 되묻는 문장 */
+  askAccommodationInfo: (missing: string[]) => {
+    const list =
+      missing.length === 1
+        ? missing[0]
+        : `${missing.slice(0, -1).join(", ")} and ${missing[missing.length - 1]}`;
+    return `To recommend a place to stay, could you tell me ${list}?`;
+  },
   /** PRD 7번: 출처 확인 안내 */
   checkSource:
     "Please check the original source for terms and latest details.",

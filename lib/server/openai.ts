@@ -25,6 +25,13 @@ const placeSchema = z.object({
 });
 
 const modelAnswerSchema = z.object({
+  // 먼저 채우는 확인 항목. AI의 판단만 믿지 않고 코드가 PRD M1 규칙 4·7을 지키는 데 쓴다.
+  // (형식에서 앞에 두었으므로 AI가 답변을 쓰기 전에 먼저 채운다)
+  is_english: z.boolean(),
+  asks_accommodation: z.boolean(),
+  area_known: z.boolean(),
+  budget_known: z.boolean(),
+  guests_known: z.boolean(),
   // 하루 일정(itinerary)은 작업 15에서 추가한다.
   kind: z.enum(["answer", "clarify", "refusal"]),
   reply: z.string(),
@@ -65,11 +72,24 @@ function normalizeUrl(raw: string | null | undefined): string | null {
 /** 이번 답변을 만들 때 AI가 실제로 웹 검색에서 찾은 주소 모음 */
 function collectSearchedUrls(response: OpenAIResponse): Set<string> {
   const urls = new Set<string>();
+  const add = (raw: string | null | undefined) => {
+    const url = normalizeUrl(raw);
+    if (url) urls.add(url);
+  };
   for (const item of response.output) {
-    if (item.type !== "web_search_call" || item.action.type !== "search") continue;
-    for (const source of item.action.sources ?? []) {
-      const url = normalizeUrl(source.url);
-      if (url) urls.add(url);
+    if (item.type === "web_search_call") {
+      if (item.action.type === "search") {
+        for (const source of item.action.sources ?? []) add(source.url); // 검색 결과
+      } else if (item.action.type === "open_page") {
+        add(item.action.url); // AI가 실제로 열어 본 페이지
+      }
+    } else if (item.type === "message") {
+      for (const part of item.content) {
+        if (part.type !== "output_text") continue;
+        for (const note of part.annotations ?? []) {
+          if (note.type === "url_citation") add(note.url); // 답변에 인용된 페이지
+        }
+      }
     }
   }
   return urls;
@@ -116,6 +136,32 @@ function toPlainText(text: string): string {
 
 /** AI 답변을 화면용 응답으로 바꾼다. 확인된 장소만 최대 3곳 남긴다. */
 function toChatResponse(answer: ModelAnswer, searched: Set<string>): ChatResponse {
+  // M1 규칙 7: 영어가 아닌 질문에는 내용에 답하지 않고 고정 안내만 보낸다.
+  if (!answer.is_english) {
+    return { kind: "refusal", reply: MESSAGES.askInEnglish, places: [], itinerary: null };
+  }
+
+  // M1 규칙 4: 숙소는 지역·예산·인원 중 빠진 것을 모두 한 번에 되묻고, 다 모이기 전에는 추천하지 않는다.
+  if (answer.asks_accommodation) {
+    const missing: string[] = [];
+    if (!answer.area_known) missing.push(MESSAGES.accommodationItems.area);
+    if (!answer.budget_known) missing.push(MESSAGES.accommodationItems.budget);
+    if (!answer.guests_known) missing.push(MESSAGES.accommodationItems.guests);
+    if (missing.length > 0) {
+      return {
+        kind: "clarify",
+        reply: MESSAGES.askAccommodationInfo(missing),
+        places: [],
+        itinerary: null,
+      };
+    }
+  }
+
+  // 되묻기·거절 답변에는 장소 카드를 붙이지 않는다. (PRD M1 규칙 4·6·7)
+  if (answer.kind !== "answer") {
+    return { kind: answer.kind, reply: toPlainText(answer.reply), places: [], itinerary: null };
+  }
+
   const places = answer.places
     .map((p) => toVerifiedPlace(p, searched))
     .filter((p): p is Place => p !== null)
@@ -135,6 +181,8 @@ export async function askHaru(messages: ChatMessage[]): Promise<ChatResponse> {
     instructions: buildInstructions(),
     input: messages.map((m) => ({ role: m.role, content: m.content })),
     tools: [{ type: "web_search", user_location: { type: "approximate", country: "KR" } }],
+    // 매번 웹 검색을 하게 한다. 검색을 건너뛰면 출처 주소를 확인할 수 없어 장소가 모두 걸러진다.
+    tool_choice: "required",
     include: ["web_search_call.action.sources"],
     max_output_tokens: OPENAI_MAX_OUTPUT_TOKENS,
     text: {

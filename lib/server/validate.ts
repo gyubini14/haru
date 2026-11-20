@@ -22,6 +22,18 @@ export type ValidationResult =
   | { ok: false; reason: "invalid" | "too_long" };
 
 /**
+ * 글자의 절반 이상이 영문이 아니면 영어 질문이 아니라고 본다. (예: 한국어만 쓴 질문)
+ * "Where is 광장시장?"처럼 영어에 한글 이름이 섞인 질문은 영어로 본다.
+ * 스페인어처럼 영문 글자를 쓰는 다른 언어는 여기서 못 걸러내고 AI 지침(M1 규칙 7)이 처리한다.
+ */
+export function isMostlyNonEnglish(text: string): boolean {
+  const letters = text.match(/\p{L}/gu) ?? [];
+  if (letters.length === 0) return false;
+  const latin = letters.filter((ch) => /\p{Script=Latin}/u.test(ch)).length;
+  return latin / letters.length < 0.5;
+}
+
+/**
  * 요청 본문을 검사하고 최근 10턴(말풍선 최대 20개)만 남긴다. (Design Ref: §4.1 ③)
  * - 마지막 메시지는 사용자의 질문이어야 한다.
  * - 사용자 질문은 300자 이하여야 한다. (PRD 7번 악용 방지)
