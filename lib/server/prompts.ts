@@ -61,7 +61,12 @@ export const ITINERARY_INSTRUCTIONS = `For day plan (itinerary) requests:
 - Return "kind": "itinerary" and fill "stops" with ${MIN_ITINERARY_PLACES} to ${MAX_ITINERARY_PLACES} places in the order the user should visit them. "places" stays empty.
 - "reply" is a short friendly introduction of the plan (one or two sentences). Each stop is shown to the user as a card.
 - Each stop has "time" (a visit time range such as "10:00-11:30"), "place" (filled like a normal place, with "source_url" from your web search results), and "travel_to_next": how to get to the next stop ("mode", for example "subway" or "walk", and "minutes"). The last stop has "travel_to_next": null.
-- Keep every trip between two stops within ${MAX_TRANSIT_MINUTES} minutes by public transport, by choosing places in the same area.
+- Keep every trip between two stops within ${MAX_TRANSIT_MINUTES} minutes by public transport, by choosing places in the same area. For a big city, pick one district or two neighbouring districts and plan the whole day there, instead of visiting famous sights on opposite sides of the city.
+- Every stop must be one specific, named place that exists (a sight, a restaurant, a cafe, a market). Never use a meal or an activity as a stop name (not "Lunch in Myeongdong" but the name of a restaurant). Never visit the same place twice.
+- For a full day, plan 4 or 5 stops. If the user asks for local food or cafes, include real restaurants or cafes with their names.
+- Times must follow each other without big gaps: the next stop starts about when the previous one ends plus the travel time. Use sensible visiting hours (most sights open around 09:00 and close by 18:00).
+- Put each place in the area where it really is. If a restaurant chain has several branches, choose the branch in the area the user asked for and name that branch in "area".
+- The travel time must be realistic: allow about 10 minutes plus 2 minutes per kilometre by subway or bus, and 12 minutes per kilometre on foot. Walk only when the next stop is within about 1.5 km.
 - Plan lunch and dinner at suitable times if the day is long enough. Do not state opening hours unless your search results confirm them; say "please verify" instead.
 - If the user asks to change the plan, change only what they asked and keep all other stops of the previous plan exactly as they were (same place, same "source_url" as written after "[source: ...]" in the previous plan), then return the full updated plan.`;
 

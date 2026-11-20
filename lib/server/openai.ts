@@ -14,6 +14,7 @@ import { MESSAGES } from "@/lib/messages";
 import { getOpenAIClient } from "@/lib/server/openaiClient";
 import { attachPositions, describeLocation } from "@/lib/server/places";
 import { buildInstructions } from "@/lib/server/prompts";
+import { fixTravelTimes } from "@/lib/server/travel";
 import { triage, type Triage } from "@/lib/server/triage";
 import type { ChatMessage, ChatResponse, ItineraryStop, Place, Position } from "@/lib/types";
 
@@ -180,6 +181,10 @@ function toVerifiedPlace(
   };
 }
 
+// "Lunch", "Dinner in Myeongdong"처럼 끼니 이름만 있고 구체적인 장소 이름이 없는 일정 항목
+const GENERIC_STOP_NAME =
+  /^(?:a\s+)?(?:(?:k-beauty\s+)?shopping|street\s+food|sightseeing|food\s+tour|breakfast|brunch|lunch|dinner|coffee(?:\s+break)?|snack|free\s+time|rest)(?:\s+(?:in|at|near|around)\s+[\w\s-]+)?$/i;
+
 /** AI 답변을 화면용 응답으로 바꾼다. 확인된 장소만 최대 3곳 남긴다. */
 function toChatResponse(
   answer: ModelAnswer,
@@ -192,6 +197,12 @@ function toChatResponse(
     const stops: ItineraryStop[] = answer.stops
       .map((s) => ({ s, place: toVerifiedPlace(s.place, searched, false, null) }))
       .filter((x): x is { s: (typeof answer.stops)[number]; place: Place } => x.place !== null)
+      // 장소가 아닌 항목("Lunch in Myeongdong")과 같은 장소의 반복은 일정에서 뺀다
+      .filter(({ place }) => !GENERIC_STOP_NAME.test(place.name))
+      .filter(({ place }, i, all) => {
+        const key = place.name.toLowerCase();
+        return all.findIndex((o) => o.place.name.toLowerCase() === key) === i;
+      })
       .slice(0, MAX_ITINERARY_PLACES)
       .map(({ s, place }) => ({
         time: toPlainText(s.time),
@@ -359,10 +370,9 @@ export async function askHaru(
   if (chat.itinerary) {
     const stops = chat.itinerary.stops;
     const placedStops = await attachPositions(stops.map((s) => s.place));
-    return {
-      ...chat,
-      itinerary: { stops: stops.map((s, i) => ({ ...s, place: placedStops[i] })) },
-    };
+    const located = stops.map((s, i) => ({ ...s, place: placedStops[i] }));
+    // AI가 적은 이동 시간이 거리상 불가능하면 좌표 거리로 바로잡는다
+    return { ...chat, itinerary: { stops: fixTravelTimes(located) } };
   }
 
   // 확인된 장소의 좌표를 Google 장소 검색으로 채운다 (실패해도 답변은 그대로 보낸다)

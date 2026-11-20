@@ -1,3 +1,4 @@
+import { MAX_TRANSIT_MINUTES } from "@/lib/constants";
 import { MESSAGES } from "@/lib/messages";
 import type { ItineraryStop } from "@/lib/types";
 
@@ -48,6 +49,8 @@ export function ItineraryCard({ stops }: { stops: ItineraryStop[] }) {
             {stop.travelToNext && (
               <p className="mt-2 text-xs font-medium text-zinc-600 dark:text-zinc-300">
                 ↓ {stop.travelToNext.minutes} min by {stop.travelToNext.mode}
+                {stop.travelToNext.minutes > MAX_TRANSIT_MINUTES &&
+                  " (longer than 30 minutes, please check the route)"}
               </p>
             )}
           </div>

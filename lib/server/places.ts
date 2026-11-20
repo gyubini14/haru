@@ -4,15 +4,27 @@
 
 import { MAX_MAP_PLACES } from "@/lib/constants";
 // 한국 밖 좌표는 엉뚱한 나라의 같은 이름 장소이므로 걸러낸다
-import { isInKorea } from "@/lib/geo";
+import { distanceKm, isInKorea } from "@/lib/geo";
 import { MESSAGES } from "@/lib/messages";
 import type { Place, Position } from "@/lib/types";
 
 const TEXT_SEARCH_URL = "https://places.googleapis.com/v1/places:searchText";
 const PLACES_TIMEOUT_MS = 5000;
 
-/** "이름 + 지역"으로 검색해 좌표를 찾는다. 못 찾거나 오류면 null (예외를 던지지 않는다). */
-async function findPosition(name: string, area: string): Promise<Position | null> {
+type RawPlace = {
+  location?: { latitude?: number; longitude?: number };
+  viewport?: {
+    low?: { latitude?: number; longitude?: number };
+    high?: { latitude?: number; longitude?: number };
+  };
+};
+
+/** Google 장소 검색(텍스트)으로 가장 잘 맞는 1곳을 찾는다. 못 찾거나 오류면 null (예외를 던지지 않는다). */
+async function searchText(
+  textQuery: string,
+  fieldMask: string,
+  bias?: { center: Position; radiusM: number },
+): Promise<RawPlace | null> {
   const apiKey = process.env.GOOGLE_PLACES_API_KEY;
   if (!apiKey) return null;
 
@@ -23,13 +35,24 @@ async function findPosition(name: string, area: string): Promise<Position | null
         "Content-Type": "application/json",
         "X-Goog-Api-Key": apiKey,
         // 필요한 항목만 요청해 비용을 줄인다
-        "X-Goog-FieldMask": "places.location",
+        "X-Goog-FieldMask": fieldMask,
       },
       body: JSON.stringify({
-        textQuery: `${name}, ${area}, South Korea`,
+        textQuery,
         regionCode: "KR",
         languageCode: "en",
         maxResultCount: 1,
+        // 적힌 지역 근처를 우선해서 찾는다 (같은 이름의 다른 지점이 잡히는 것을 줄인다)
+        ...(bias
+          ? {
+              locationBias: {
+                circle: {
+                  center: { latitude: bias.center.lat, longitude: bias.center.lng },
+                  radius: bias.radiusM,
+                },
+              },
+            }
+          : {}),
       }),
       signal: AbortSignal.timeout(PLACES_TIMEOUT_MS),
       cache: "no-store",
@@ -39,17 +62,76 @@ async function findPosition(name: string, area: string): Promise<Position | null
       console.error("places lookup failed:", res.status);
       return null;
     }
-    const data = (await res.json()) as {
-      places?: { location?: { latitude?: number; longitude?: number } }[];
-    };
-    const loc = data.places?.[0]?.location;
-    if (typeof loc?.latitude !== "number" || typeof loc?.longitude !== "number") return null;
-    const position = { lat: loc.latitude, lng: loc.longitude };
-    return isInKorea(position) ? position : null;
+    const data = (await res.json()) as { places?: RawPlace[] };
+    return data.places?.[0] ?? null;
   } catch (e) {
     console.error("places lookup error:", e instanceof Error ? e.name : "unknown");
     return null;
   }
+}
+
+function toPosition(loc: RawPlace["location"]): Position | null {
+  if (typeof loc?.latitude !== "number" || typeof loc?.longitude !== "number") return null;
+  const position = { lat: loc.latitude, lng: loc.longitude };
+  return isInKorea(position) ? position : null;
+}
+
+/** 지역(예: Gangnam)의 중심과 크기. 장소가 적힌 지역과 다른 곳으로 잡히는지 확인하는 데 쓴다. */
+interface AreaInfo {
+  center: Position;
+  /** 지역 크기의 절반(km). 서울처럼 넓은 곳은 크고, 동네는 작다 */
+  halfSizeKm: number;
+}
+
+async function findArea(area: string): Promise<AreaInfo | null> {
+  if (!area.trim()) return null;
+  const raw = await searchText(`${area}, South Korea`, "places.location,places.viewport");
+  const center = toPosition(raw?.location);
+  if (!raw || !center) return null;
+  const low = raw.viewport?.low;
+  const high = raw.viewport?.high;
+  const halfSizeKm =
+    typeof low?.latitude === "number" &&
+    typeof low?.longitude === "number" &&
+    typeof high?.latitude === "number" &&
+    typeof high?.longitude === "number"
+      ? distanceKm(
+          { lat: low.latitude, lng: low.longitude },
+          { lat: high.latitude, lng: high.longitude },
+        ) / 2
+      : 0;
+  return { center, halfSizeKm };
+}
+
+/** 같은 이름이라도 적힌 지역에서 이 거리(km)보다 멀리 떨어진 곳이면 다른 장소로 보고 확인 안 됨으로 처리한다 */
+const MIN_AREA_TOLERANCE_KM = 12;
+
+/**
+ * "이름 + 지역"으로 검색해 좌표를 찾는다. 지역 근처를 우선해서 찾고,
+ * 적힌 지역과 너무 먼 곳이 나오면 null로 처리한다. (DESIGN 4.1: 적힌 지역과 다르면 "확인 안 됨")
+ */
+async function findPosition(
+  name: string,
+  area: string,
+  areaInfo: AreaInfo | null,
+): Promise<Position | null> {
+  const raw = await searchText(
+    `${name}, ${area}, South Korea`,
+    "places.location",
+    areaInfo
+      ? {
+          center: areaInfo.center,
+          radiusM: Math.min(50_000, Math.max(5_000, areaInfo.halfSizeKm * 1000)),
+        }
+      : undefined,
+  );
+  const position = toPosition(raw?.location);
+  if (!position) return null;
+  if (areaInfo) {
+    const tolerance = Math.max(MIN_AREA_TOLERANCE_KM, areaInfo.halfSizeKm * 1.2);
+    if (distanceKm(areaInfo.center, position) > tolerance) return null;
+  }
+  return position;
 }
 
 const NEARBY_URL = "https://places.googleapis.com/v1/places:searchNearby";
@@ -113,10 +195,21 @@ export async function describeLocation(location: Position): Promise<string | nul
  * 지도에는 최대 MAX_MAP_PLACES곳만 올리므로 그 이후는 찾지 않는다.
  */
 export async function attachPositions(places: Place[]): Promise<Place[]> {
+  // 같은 지역 이름은 한 번만 찾는다 (일정은 대부분 같은 지역의 장소들이다)
+  const areas = new Map<string, Promise<AreaInfo | null>>();
+  const areaOf = (area: string) => {
+    let found = areas.get(area);
+    if (!found) {
+      found = findArea(area);
+      areas.set(area, found);
+    }
+    return found;
+  };
+
   return Promise.all(
     places.map(async (place, i) => {
       if (i >= MAX_MAP_PLACES) return place;
-      const position = await findPosition(place.name, place.area);
+      const position = await findPosition(place.name, place.area, await areaOf(place.area));
       return position
         ? { ...place, position, mapNote: null }
         : { ...place, position: null, mapNote: MESSAGES.noMapLocation };
