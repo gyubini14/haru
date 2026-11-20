@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { MAX_HISTORY_MESSAGES } from "@/lib/constants";
 import { MESSAGES } from "@/lib/messages";
-import type { ChatResponse } from "@/lib/types";
+import type { ApiError, ChatMessage, ChatResponse } from "@/lib/types";
 
 export interface UiMessage {
   id: number;
@@ -12,30 +13,25 @@ export interface UiMessage {
   response?: ChatResponse;
 }
 
-// 작업 2: AI를 아직 연결하지 않았으므로 임시 답변을 돌려준다.
-// 작업 3에서 이 함수를 서버(/api/chat) 호출로 바꾼다.
-async function askTemporary(question: string): Promise<ChatResponse> {
-  await new Promise((resolve) => setTimeout(resolve, 700));
-  // 오류 화면을 눈으로 확인하기 위한 임시 입력. 작업 3에서 함께 지운다.
-  if (question.trim() === "/error") throw new Error("temporary error");
-  return {
-    kind: "answer",
-    reply: "This is a temporary answer. Haru's AI is not connected yet.",
-    places: [
-      {
-        name: "Sample Place",
-        area: "Sample area",
-        reason: "This card only shows how a recommendation will look.",
-        howToGetThere: "Directions will appear here.",
-        tip: null,
-        source: null,
-        verified: false,
-        position: null,
-        mapNote: null,
-      },
-    ],
-    itinerary: null,
-  };
+/** 화면의 대화를 서버로 보낼 모양으로 바꾼다. 최근 10턴(말풍선 최대 20개)만 보낸다. */
+function toApiMessages(messages: UiMessage[]): ChatMessage[] {
+  return messages
+    .slice(-MAX_HISTORY_MESSAGES)
+    .map((m) => ({ role: m.role, content: m.content }));
+}
+
+/** 서버(/api/chat)에 대화를 보내 Haru의 답변을 받는다. 실패하면 영어 오류 문구를 담아 던진다. */
+async function askServer(conversation: UiMessage[]): Promise<ChatResponse> {
+  const res = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ messages: toApiMessages(conversation) }),
+  });
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as ApiError | null;
+    throw new Error(body?.error?.message ?? MESSAGES.aiFailure);
+  }
+  return (await res.json()) as ChatResponse;
 }
 
 export function useChat() {
@@ -45,11 +41,11 @@ export function useChat() {
   const nextId = useRef(1);
   const history = useRef<UiMessage[]>([]);
 
-  const request = useCallback(async (question: string) => {
+  const request = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await askTemporary(question);
+      const data = await askServer(history.current);
       const reply: UiMessage = {
         id: nextId.current++,
         role: "assistant",
@@ -58,8 +54,8 @@ export function useChat() {
       };
       history.current = [...history.current, reply];
       setMessages(history.current);
-    } catch {
-      setError(MESSAGES.aiFailure);
+    } catch (e) {
+      setError(e instanceof Error && e.message ? e.message : MESSAGES.aiFailure);
     } finally {
       setLoading(false);
     }
@@ -73,16 +69,16 @@ export function useChat() {
       const question: UiMessage = { id: nextId.current++, role: "user", content };
       history.current = [...history.current, question];
       setMessages(history.current);
-      await request(content);
+      await request();
     },
     [loading, request],
   );
 
-  /** 오류가 났을 때 마지막 질문을 다시 보낸다. */
+  /** 오류가 났을 때 마지막 질문을 다시 보낸다. (대화의 마지막이 사용자 질문일 때만) */
   const retry = useCallback(async () => {
     if (loading) return;
-    const lastQuestion = [...history.current].reverse().find((m) => m.role === "user");
-    if (lastQuestion) await request(lastQuestion.content);
+    const last = history.current[history.current.length - 1];
+    if (last?.role === "user") await request();
   }, [loading, request]);
 
   return { messages, loading, error, send, retry };
