@@ -15,6 +15,8 @@ export interface Position {
 export interface Place {
   /** 장소 이름 (영어) */
   name: string;
+  /** 장소 이름의 한글 표기. 현지에서 간판·지도 검색에 쓰도록 영어 이름과 함께 보여 준다. 모르면 null */
+  nameKo: string | null;
   /** 지역 */
   area: string;
   /** 추천 이유 1문장 */

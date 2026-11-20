@@ -24,7 +24,10 @@ export function PlaceCard({ place, index }: PlaceCardProps) {
           {index + 1}
         </span>
         <div className="min-w-0">
-          <p className="font-semibold">{place.name}</p>
+          <p className="font-semibold">
+            {place.name}
+            {place.nameKo && <span className="ml-1.5 font-normal text-zinc-600 dark:text-zinc-300">{place.nameKo}</span>}
+          </p>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">{place.area}</p>
         </div>
       </div>

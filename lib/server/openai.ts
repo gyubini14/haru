@@ -165,6 +165,9 @@ function toVerifiedPlace(
 
   return {
     name: toPlainText(p.name),
+    // 한글 이름은 AI가 적게 하지 않는다 (실험에서 그럴듯하게 틀린 이름을 지어냈다). Google 장소 검색이
+    // 알려 주는 한글 이름만 좌표를 찾을 때 채운다 (places.ts).
+    nameKo: null,
     area: toPlainText(p.area),
     reason: toPlainText(p.reason),
     howToGetThere: toPlainText(p.how_to_get_there),

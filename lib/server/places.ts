@@ -12,6 +12,7 @@ const TEXT_SEARCH_URL = "https://places.googleapis.com/v1/places:searchText";
 const PLACES_TIMEOUT_MS = 5000;
 
 type RawPlace = {
+  displayName?: { text?: string };
   location?: { latitude?: number; longitude?: number };
   viewport?: {
     low?: { latitude?: number; longitude?: number };
@@ -24,6 +25,7 @@ async function searchText(
   textQuery: string,
   fieldMask: string,
   bias?: { center: Position; radiusM: number },
+  languageCode = "en",
 ): Promise<RawPlace | null> {
   const apiKey = process.env.GOOGLE_PLACES_API_KEY;
   if (!apiKey) return null;
@@ -40,7 +42,7 @@ async function searchText(
       body: JSON.stringify({
         textQuery,
         regionCode: "KR",
-        languageCode: "en",
+        languageCode,
         maxResultCount: 1,
         // 적힌 지역 근처를 우선해서 찾는다 (같은 이름의 다른 지점이 잡히는 것을 줄인다)
         ...(bias
@@ -114,24 +116,27 @@ async function findPosition(
   name: string,
   area: string,
   areaInfo: AreaInfo | null,
-): Promise<Position | null> {
-  const raw = await searchText(
-    `${name}, ${area}, South Korea`,
-    "places.location",
-    areaInfo
-      ? {
-          center: areaInfo.center,
-          radiusM: Math.min(50_000, Math.max(5_000, areaInfo.halfSizeKm * 1000)),
-        }
-      : undefined,
-  );
-  const position = toPosition(raw?.location);
-  if (!position) return null;
-  if (areaInfo) {
-    const tolerance = Math.max(MIN_AREA_TOLERANCE_KM, areaInfo.halfSizeKm * 1.2);
-    if (distanceKm(areaInfo.center, position) > tolerance) return null;
+): Promise<{ position: Position; nameKo: string | null } | null> {
+  const bias = areaInfo
+    ? {
+        center: areaInfo.center,
+        radiusM: Math.min(50_000, Math.max(5_000, areaInfo.halfSizeKm * 1000)),
+      }
+    : undefined;
+  const query = `${name}, ${area}, South Korea`;
+  const tolerance = areaInfo ? Math.max(MIN_AREA_TOLERANCE_KM, areaInfo.halfSizeKm * 1.2) : null;
+
+  // 한국어로 요청해, 같은 장소의 한글 이름(Google이 알려 주는 표기)도 함께 받는다.
+  // 한국어 검색이 실패하면(영어 이름만 아는 장소) 영어로 다시 찾고, 이때는 한글 이름 없이 좌표만 쓴다.
+  for (const language of ["ko", "en"]) {
+    const raw = await searchText(query, "places.location,places.displayName", bias, language);
+    const position = toPosition(raw?.location);
+    if (!position) continue;
+    if (areaInfo && tolerance !== null && distanceKm(areaInfo.center, position) > tolerance) continue;
+    const ko = language === "ko" ? (raw?.displayName?.text?.trim() ?? "") : "";
+    return { position, nameKo: /[가-힣]/.test(ko) ? ko.slice(0, 80) : null };
   }
-  return position;
+  return null;
 }
 
 const NEARBY_URL = "https://places.googleapis.com/v1/places:searchNearby";
@@ -209,9 +214,9 @@ export async function attachPositions(places: Place[]): Promise<Place[]> {
   return Promise.all(
     places.map(async (place, i) => {
       if (i >= MAX_MAP_PLACES) return place;
-      const position = await findPosition(place.name, place.area, await areaOf(place.area));
-      return position
-        ? { ...place, position, mapNote: null }
+      const found = await findPosition(place.name, place.area, await areaOf(place.area));
+      return found
+        ? { ...place, position: found.position, nameKo: found.nameKo, mapNote: null }
         : { ...place, position: null, mapNote: MESSAGES.noMapLocation };
     }),
   );
