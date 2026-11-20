@@ -14,6 +14,7 @@ import { MESSAGES } from "@/lib/messages";
 import { getOpenAIClient } from "@/lib/server/openaiClient";
 import { attachPositions, describeLocation, locateRoute } from "@/lib/server/places";
 import { buildInstructions } from "@/lib/server/prompts";
+import { compactReply, introOnly } from "@/lib/server/replyText";
 import { fixTravelTimes } from "@/lib/server/travel";
 import { triage, type Triage } from "@/lib/server/triage";
 import type { ChatMessage, ChatResponse, ItineraryStop, Place, Position } from "@/lib/types";
@@ -223,12 +224,14 @@ function toChatResponse(
     }
     // 마지막 장소에는 "다음 장소"가 없다 (중간 장소가 걸러졌어도 이동 안내가 엉키지 않게 한다)
     stops[stops.length - 1].travelToNext = null;
-    return { kind: "itinerary", reply: toPlainText(answer.reply), places: [], itinerary: { stops } };
+    // 일정은 카드로 나오므로 글에는 소개 문장만 남긴다
+    const reply = introOnly(toPlainText(answer.reply), stops.map((s) => s.place.name), MESSAGES.itineraryIntro);
+    return { kind: "itinerary", reply, places: [], itinerary: { stops } };
   }
 
   // 되묻기 답변에는 장소 카드를 붙이지 않는다.
   if (answer.kind !== "answer") {
-    return { kind: answer.kind, reply: toPlainText(answer.reply), places: [], itinerary: null };
+    return { kind: answer.kind, reply: compactReply(toPlainText(answer.reply)), places: [], itinerary: null };
   }
 
   const places = answer.places
@@ -246,7 +249,12 @@ function toChatResponse(
       itinerary: null,
     };
   }
-  return { kind: answer.kind, reply: toPlainText(answer.reply), places, itinerary: null };
+  // 장소는 카드로 나오므로 글에는 소개 문장만 남긴다 (같은 내용을 반복하는 목록 제거). 장소가 없으면 빈 줄만 줄인다.
+  const reply =
+    places.length > 0
+      ? introOnly(toPlainText(answer.reply), places.map((p) => p.name), MESSAGES.placesIntro)
+      : compactReply(toPlainText(answer.reply));
+  return { kind: answer.kind, reply, places, itinerary: null };
 }
 
 /** 분류 결과가 거절·되묻기이면 AI 답변 없이 곧바로 보낼 응답을 돌려준다. 아니면 null. */

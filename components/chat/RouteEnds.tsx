@@ -7,25 +7,30 @@ export function RouteEnds({ route }: { route: RouteEndsData }) {
     { label: "B", caption: "To", end: route.to },
   ];
   return (
-    <div className="space-y-2 rounded-2xl border border-line bg-paper p-4 text-sm">
+    <div className="space-y-2 rounded-2xl bg-soft p-3 text-sm leading-snug">
       {ends.map(({ label, caption, end }) => (
-        <div key={label} className="flex items-start gap-3">
-          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ink text-xs font-semibold text-paper">
-            {label}
-          </span>
-          <div className="min-w-0">
-            <p className="text-xs font-medium uppercase tracking-wider text-mute">{caption}</p>
-            <p className="font-semibold tracking-tight">
-              {end.name}
-              {end.nameKo && <span className="ml-2 text-sm font-normal text-mute">{end.nameKo}</span>}
-            </p>
-            <p className="text-xs text-mute">{end.area}</p>
-            {!end.position && (
-              <p className="mt-1 text-xs text-mute">
-                Couldn&apos;t place this on the map: its exact location could not be confirmed.
+        <div key={label}>
+          <div className="flex items-center gap-2.5 rounded-xl bg-white px-3 py-2 text-zinc-900">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-xs font-semibold text-white">
+              {label}
+            </span>
+            <div className="min-w-0">
+              <p className="text-base font-semibold tracking-tight">
+                {end.name}
+                {end.nameKo && (
+                  <span className="ml-2 text-sm font-normal text-zinc-500">{end.nameKo}</span>
+                )}
               </p>
-            )}
+              <p className="text-xs text-zinc-500">
+                {caption} · {end.area}
+              </p>
+            </div>
           </div>
+          {!end.position && (
+            <p className="px-1 pt-1 text-xs text-mute">
+              Couldn&apos;t place this on the map: its exact location could not be confirmed.
+            </p>
+          )}
         </div>
       ))}
     </div>

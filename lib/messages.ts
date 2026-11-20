@@ -42,6 +42,9 @@ export const MESSAGES = {
   /** PRD M2 규칙 4: 촬영지에는 이웃을 배려하라는 주의사항을 함께 전달 */
   filmingEtiquette:
     "Please be quiet and respectful of nearby residents, and do not enter private property or film without permission.",
+  /** 설계 제안: 장소 카드가 있는 답변에서 소개 문장이 없을 때 쓰는 문구 */
+  placesIntro: "Here are my top picks:",
+  itineraryIntro: "Here is your plan for the day:",
   /** 설계 제안: 하루 일정을 짤 지역을 모를 때 되묻는 문구 */
   askDayPlanArea:
     "Which area or city would you like to explore? For example Seoul, Busan or Jeju. Tell me and I'll plan your day.",

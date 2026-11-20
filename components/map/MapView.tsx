@@ -14,14 +14,6 @@ const DEFAULT_ZOOM = 11;
 // 장소가 한 곳일 때 확대 정도
 const SINGLE_PLACE_ZOOM = 15;
 
-// 채도를 낮추고 불필요한 가게 표시를 숨긴 지도 스타일
-const MAP_STYLES: google.maps.MapTypeStyle[] = [
-  { stylers: [{ saturation: -100 }, { lightness: 4 }] },
-  { featureType: "poi.business", stylers: [{ visibility: "off" }] },
-  { featureType: "transit", elementType: "labels.icon", stylers: [{ visibility: "off" }] },
-  { featureType: "water", stylers: [{ color: "#dcdcdc" }] },
-];
-
 let optionsSet = false;
 
 type Status = "loading" | "ready" | "unavailable";
@@ -69,8 +61,6 @@ export function MapView({ points }: MapViewProps) {
           streetViewControl: false,
           mapTypeControl: false,
           fullscreenControl: false,
-          // 흑백 계열의 차분한 지도 색 (보이는 모양만 바꾼다)
-          styles: MAP_STYLES,
         });
         setMap(created);
         setStatus("ready");

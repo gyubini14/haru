@@ -1,6 +1,7 @@
 import type { UiMessage } from "@/hooks/useChat";
 import { ItineraryCard } from "@/components/chat/ItineraryCard";
 import { PlaceCard } from "@/components/chat/PlaceCard";
+import { ReplyText } from "@/components/chat/ReplyText";
 import { RouteEnds } from "@/components/chat/RouteEnds";
 
 export function MessageBubble({ message }: { message: UiMessage }) {
@@ -10,15 +11,17 @@ export function MessageBubble({ message }: { message: UiMessage }) {
 
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-      <div className={`max-w-[85%] space-y-3 ${isUser ? "" : "w-full max-w-[92%]"}`}>
+      <div className={`max-w-[85%] space-y-2 ${isUser ? "" : "w-full max-w-[92%]"}`}>
         {/* 답변은 글자로만 표시한다 (HTML로 해석하지 않음) */}
-        <div
-          className={`whitespace-pre-wrap rounded-3xl px-5 py-3 text-base leading-relaxed ${
-            isUser ? "bg-ink text-paper" : "bg-soft text-ink"
-          }`}
-        >
-          {message.content}
-        </div>
+        {isUser ? (
+          <div className="whitespace-pre-wrap rounded-3xl bg-ink px-5 py-3 text-base leading-relaxed text-paper">
+            {message.content}
+          </div>
+        ) : (
+          <div className="rounded-3xl bg-soft px-4 py-3 text-ink">
+            <ReplyText text={message.content} />
+          </div>
+        )}
         {response?.route && <RouteEnds route={response.route} />}
         {stops.length > 0 ? (
           <ItineraryCard stops={stops} />
