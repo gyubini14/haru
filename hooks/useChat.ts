@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { responseToHistoryText } from "@/lib/chatHistory";
 import { MAX_HISTORY_MESSAGES } from "@/lib/constants";
 import { MESSAGES } from "@/lib/messages";
 import type { ApiError, ChatMessage, ChatResponse } from "@/lib/types";
@@ -13,11 +14,15 @@ export interface UiMessage {
   response?: ChatResponse;
 }
 
-/** 화면의 대화를 서버로 보낼 모양으로 바꾼다. 최근 10턴(말풍선 최대 20개)만 보낸다. */
+/**
+ * 화면의 대화를 서버로 보낼 모양으로 바꾼다. 최근 10턴(말풍선 최대 20개)만 보낸다.
+ * Haru의 이전 답변은 장소 목록도 글로 함께 보내서 "두 번째 곳 더 알려줘" 같은 질문이 통하게 한다.
+ */
 function toApiMessages(messages: UiMessage[]): ChatMessage[] {
-  return messages
-    .slice(-MAX_HISTORY_MESSAGES)
-    .map((m) => ({ role: m.role, content: m.content }));
+  return messages.slice(-MAX_HISTORY_MESSAGES).map((m) => ({
+    role: m.role,
+    content: m.response ? responseToHistoryText(m.response) : m.content,
+  }));
 }
 
 /** 서버(/api/chat)에 대화를 보내 Haru의 답변을 받는다. 실패하면 영어 오류 문구를 담아 던진다. */
