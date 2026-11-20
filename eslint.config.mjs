@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // 삭제 예정 파일 보관 폴더는 검사하지 않는다.
+    "trash-can/**",
   ]),
 ]);
 
