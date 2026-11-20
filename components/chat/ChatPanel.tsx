@@ -3,11 +3,17 @@
 import { ChatInput } from "@/components/chat/ChatInput";
 import { MessageList } from "@/components/chat/MessageList";
 import { WelcomeChips } from "@/components/chat/WelcomeChips";
-import { useChat } from "@/hooks/useChat";
+import type { useChat } from "@/hooks/useChat";
 import { MESSAGES } from "@/lib/messages";
 
-export function ChatPanel() {
-  const { messages, loading, error, send, retry } = useChat();
+// 대화 상태는 위(HaruApp)에서 만들어 받는다. 지도도 같은 상태를 쓰기 때문이다.
+export function ChatPanel({
+  messages,
+  loading,
+  error,
+  send,
+  retry,
+}: ReturnType<typeof useChat>) {
 
   return (
     <section className="mx-auto flex h-full w-full max-w-2xl flex-col">
