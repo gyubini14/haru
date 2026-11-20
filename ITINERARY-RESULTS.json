@@ -1,0 +1,1569 @@
+[
+  {
+    "id": "P1",
+    "question": "Plan a one-day itinerary in Seoul around Gyeongbokgung and Bukchon for me.",
+    "status": 200,
+    "body": {
+      "kind": "itinerary",
+      "reply": "Here's a one-day itinerary in Seoul focusing on Gyeongbokgung Palace and Bukchon Hanok Village, with a visit to Insadong in the afternoon.",
+      "places": [],
+      "itinerary": {
+        "stops": [
+          {
+            "time": "9:00-11:00",
+            "place": {
+              "name": "Gyeongbokgung Palace",
+              "area": "Seoul",
+              "reason": "Explore the main royal palace of the Joseon dynasty, offering a glimpse into Korea's rich history.",
+              "howToGetThere": "Take Subway Line 3 to Gyeongbokgung Station (Exit 5) or Line 5 to Gwanghwamun Station (Exit 2); both are a short walk to the palace.",
+              "tip": "Please verify the opening hours and admission fees before your visit.",
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://koreavisiting.com/gyeongbokgung-bukchon-insadong-one-day-seoul-itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.579617,
+                "lng": 126.977041
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 20
+            }
+          },
+          {
+            "time": "11:00-13:00",
+            "place": {
+              "name": "Bukchon Hanok Village",
+              "area": "Seoul",
+              "reason": "Wander through traditional Korean houses (hanoks) nestled between Gyeongbokgung and Changdeokgung palaces.",
+              "howToGetThere": "From Gyeongbokgung Palace, walk northeast for about 20 minutes to reach Bukchon Hanok Village.",
+              "tip": "Please verify the opening hours and any access restrictions before your visit.",
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://koreavisiting.com/gyeongbokgung-bukchon-insadong-one-day-seoul-itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5814696,
+                "lng": 126.9849519
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 15
+            }
+          },
+          {
+            "time": "13:00-14:30",
+            "place": {
+              "name": "Insadong",
+              "area": "Seoul",
+              "reason": "Enjoy a traditional cultural street known for its art galleries, antique shops, and tea houses.",
+              "howToGetThere": "From Bukchon Hanok Village, walk south for about 15 minutes to reach Insadong.",
+              "tip": "Please verify the opening hours and any access restrictions before your visit.",
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://koreavisiting.com/gyeongbokgung-bukchon-insadong-one-day-seoul-itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5717174,
+                "lng": 126.9860732
+              },
+              "mapNote": null
+            },
+            "travelToNext": null
+          }
+        ]
+      }
+    },
+    "seconds": 11.7,
+    "problems": []
+  },
+  {
+    "id": "E1",
+    "question": "Plan a one-day itinerary in Seoul around Gyeongbokgung and Bukchon for me.  →  Change the lunch to Korean food.",
+    "status": 200,
+    "body": {
+      "kind": "itinerary",
+      "reply": "Here's your updated one-day itinerary in Seoul, focusing on Gyeongbokgung Palace, Bukchon Hanok Village, and a traditional Korean lunch.",
+      "places": [],
+      "itinerary": {
+        "stops": [
+          {
+            "time": "9:00-11:00",
+            "place": {
+              "name": "Gyeongbokgung Palace",
+              "area": "Seoul",
+              "reason": "A historic palace offering a glimpse into Korea's royal past.",
+              "howToGetThere": "Take subway Line 3 to Gyeongbokgung Station, Exit 5.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://koreavisiting.com/gyeongbokgung-bukchon-insadong-one-day-seoul-itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.579617,
+                "lng": 126.977041
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 20
+            }
+          },
+          {
+            "time": "11:00-13:00",
+            "place": {
+              "name": "Bukchon Hanok Village",
+              "area": "Seoul",
+              "reason": "A traditional village showcasing well-preserved hanok houses.",
+              "howToGetThere": "From Gyeongbokgung Palace, walk east for about 20 minutes.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://koreavisiting.com/gyeongbokgung-bukchon-insadong-one-day-seoul-itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5814696,
+                "lng": 126.9849519
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 15
+            }
+          },
+          {
+            "time": "13:00-14:30",
+            "place": {
+              "name": "Tosokchon Samgyetang",
+              "area": "Seoul",
+              "reason": "Famous for its ginseng chicken soup, a traditional Korean dish.",
+              "howToGetThere": "From Bukchon Hanok Village, walk west for about 15 minutes.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://seoulplate.com/best-korean-restaurants-near-gyeongbokgung-palace",
+              "fromKoreanSource": false,
+              "bookingTips": "Be prepared for a wait during peak hours.",
+              "position": {
+                "lat": 37.577778599999995,
+                "lng": 126.9715909
+              },
+              "mapNote": null
+            },
+            "travelToNext": null
+          }
+        ]
+      }
+    },
+    "seconds": 10,
+    "problems": [],
+    "kept": 2,
+    "beforeCount": 3
+  },
+  {
+    "id": "P2",
+    "question": "Can you plan a day in Hongdae and Yeonnam-dong, Seoul? I like cafes and shopping.",
+    "status": 200,
+    "body": {
+      "kind": "itinerary",
+      "reply": "Here's a delightful day plan combining the best of Hongdae and Yeonnam-dong, focusing on cafes and shopping.",
+      "places": [],
+      "itinerary": {
+        "stops": [
+          {
+            "time": "10:00-11:30",
+            "place": {
+              "name": "Gyeongui Line Forest Park",
+              "area": "Yeonnam-dong",
+              "reason": "A serene park perfect for a morning stroll.",
+              "howToGetThere": "Exit Hongik University Station via Exit 3; the park is right outside.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://koreabestie.com/yeonnam-dong-guide",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5662075,
+                "lng": 126.91923639999999
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 5
+            }
+          },
+          {
+            "time": "11:30-13:00",
+            "place": {
+              "name": "Thanks, Oat",
+              "area": "Yeonnam-dong",
+              "reason": "A cozy café known for its healthy granola bowls and oat lattes.",
+              "howToGetThere": "From the park, walk along Seongmisan-ro 23-gil; the café is on your right.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://localskorea.com/things-to-do-hongdae-yeonnam",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5662646,
+                "lng": 126.9198948
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 10
+            }
+          },
+          {
+            "time": "13:00-15:00",
+            "place": {
+              "name": "Hongdae Shopping Street",
+              "area": "Hongdae",
+              "reason": "Bustling area with fashion boutiques and K-pop merchandise.",
+              "howToGetThere": "Walk back to Hongik University Station Exit 9; the shopping street is nearby.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.koreatripbook.com/seoul/neighborhoods/hongdae-yeonnam-dong-guide",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5541906,
+                "lng": 126.92248319999999
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 5
+            }
+          },
+          {
+            "time": "16:30-18:00",
+            "place": {
+              "name": "Parole & Langue",
+              "area": "Yeonnam-dong",
+              "reason": "Cozy dessert café known for its signature chestnut pie.",
+              "howToGetThere": "From Coffee Nap Roasters, walk along Seongmisan-ro 29-gil; the café is on your left.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://localskorea.com/things-to-do-hongdae-yeonnam",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5649733,
+                "lng": 126.92284439999999
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 5
+            }
+          },
+          {
+            "time": "18:00-19:30",
+            "place": {
+              "name": "Dwaeji Myeongga Yeonnam",
+              "area": "Yeonnam-dong",
+              "reason": "Popular spot for Korean BBQ, especially pork belly.",
+              "howToGetThere": "Walk along Donggyo-ro 51-gil; the restaurant is on your right.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://seoul-friends.com/en/things-to-do-in-hongdae",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5597364,
+                "lng": 126.9235896
+              },
+              "mapNote": null
+            },
+            "travelToNext": null
+          }
+        ]
+      }
+    },
+    "seconds": 12.4,
+    "problems": []
+  },
+  {
+    "id": "E2",
+    "question": "Can you plan a day in Hongdae and Yeonnam-dong, Seoul? I like cafes and shopping.  →  Replace the last stop with something indoors.",
+    "status": 200,
+    "body": {
+      "kind": "itinerary",
+      "reply": "Here's an updated plan for your day in Hongdae and Yeonnam-dong, focusing on indoor activities, cafes, and shopping.",
+      "places": [],
+      "itinerary": {
+        "stops": [
+          {
+            "time": "10:00-11:30",
+            "place": {
+              "name": "Gyeongui Line Forest Park",
+              "area": "Yeonnam-dong",
+              "reason": "A serene park perfect for a morning stroll.",
+              "howToGetThere": "Walk from Hongik Univ. Station Exit 3 for about 10 minutes.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://koreabestie.com/yeonnam-dong-guide",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5662075,
+                "lng": 126.91923639999999
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 5
+            }
+          },
+          {
+            "time": "11:30-13:00",
+            "place": {
+              "name": "Thanks, Oat",
+              "area": "Yeonnam-dong",
+              "reason": "A cozy cafe known for its healthy oat-based dishes.",
+              "howToGetThere": "Walk from Gyeongui Line Forest Park for about 5 minutes.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://localskorea.com/things-to-do-hongdae-yeonnam",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5662646,
+                "lng": 126.9198948
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 10
+            }
+          },
+          {
+            "time": "13:00-15:00",
+            "place": {
+              "name": "Hongdae Shopping Street",
+              "area": "Hongdae",
+              "reason": "A vibrant area filled with trendy shops and boutiques.",
+              "howToGetThere": "Walk from Thanks, Oat for about 10 minutes.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.koreatripbook.com/seoul/neighborhoods/hongdae-yeonnam-dong-guide",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5541906,
+                "lng": 126.92248319999999
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 5
+            }
+          },
+          {
+            "time": "15:00-16:30",
+            "place": {
+              "name": "Butter & Shelter",
+              "area": "Yeonnam-dong",
+              "reason": "A charming cafe in a renovated old house, perfect for a quiet break.",
+              "howToGetThere": "Walk from Hongdae Shopping Street for about 10 minutes.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://superchart.com/en/%40cafe-awning/butter-and-shelter-yeonnam-hanok-cafe-terrace",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.564233099999996,
+                "lng": 126.9246455
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 5
+            }
+          },
+          {
+            "time": "16:30-18:00",
+            "place": {
+              "name": "Sideway",
+              "area": "Yeonnam-dong",
+              "reason": "A stylish cafe offering a variety of beverages and desserts.",
+              "howToGetThere": "Walk from Butter & Shelter for about 5 minutes.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://superchart.com/en/%40suwon-lamp-shade-pomade/yeonnam-sideway-cafe-outdoor-milk-tea",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5654158,
+                "lng": 126.9237792
+              },
+              "mapNote": null
+            },
+            "travelToNext": null
+          }
+        ]
+      }
+    },
+    "seconds": 10.2,
+    "problems": [],
+    "kept": 3,
+    "beforeCount": 5
+  },
+  {
+    "id": "P3",
+    "question": "Plan one day in Myeongdong and Namsan, Seoul.",
+    "status": 200,
+    "body": {
+      "kind": "itinerary",
+      "reply": "Here's a one-day itinerary to explore Myeongdong and Namsan in Seoul, combining shopping, cultural sites, and panoramic views.",
+      "places": [],
+      "itinerary": {
+        "stops": [
+          {
+            "time": "10:00-11:00",
+            "place": {
+              "name": "Myeongdong Cathedral",
+              "area": "Myeongdong",
+              "reason": "A historic Gothic-style church offering a peaceful respite from the bustling shopping streets.",
+              "howToGetThere": "From Myeongdong Station (Line 4, Exit 5 or 6), walk north for about 5–8 minutes.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://visitmyeongdong.com/itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5633851,
+                "lng": 126.987436
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 5
+            }
+          },
+          {
+            "time": "11:00-13:00",
+            "place": {
+              "name": "Myeongdong Shopping Streets",
+              "area": "Myeongdong",
+              "reason": "A vibrant area known for its extensive selection of K-beauty products and fashion stores.",
+              "howToGetThere": "From Myeongdong Cathedral, head back down the main strip to explore the shops.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://visitmyeongdong.com/itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5641885,
+                "lng": 126.98611799999998
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 15
+            }
+          },
+          {
+            "time": "13:00-14:00",
+            "place": {
+              "name": "Lunch in Myeongdong",
+              "area": "Myeongdong",
+              "reason": "Enjoy a traditional Korean meal in the heart of the shopping district.",
+              "howToGetThere": "Choose from numerous restaurants offering Korean set meals (jeong-sik) for under ₩15,000.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://visitmyeongdong.com/itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5626417,
+                "lng": 126.9855302
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 15
+            }
+          },
+          {
+            "time": "14:00-16:00",
+            "place": {
+              "name": "Namsan Cable Car",
+              "area": "Namsan",
+              "reason": "A scenic ride up Namsan Mountain offering stunning views of Seoul.",
+              "howToGetThere": "From Myeongdong Station (Line 4, Exit 3), walk uphill for about 10–15 minutes to reach the cable car station.",
+              "tip": "Queues can be long during peak hours; consider visiting during off-peak times.",
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://koriq.kr/myeongdong-one-day-itinerary",
+              "fromKoreanSource": true,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.556590799999995,
+                "lng": 126.9839744
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 5
+            }
+          },
+          {
+            "time": "16:00-17:30",
+            "place": {
+              "name": "N Seoul Tower",
+              "area": "Namsan",
+              "reason": "Offers panoramic views of Seoul from its observation deck.",
+              "howToGetThere": "After the cable car ride, follow signs to the tower's observation deck.",
+              "tip": "Arrive early to secure a good spot for sunset views.",
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://koriq.kr/myeongdong-one-day-itinerary",
+              "fromKoreanSource": true,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5511694,
+                "lng": 126.98822659999999
+              },
+              "mapNote": null
+            },
+            "travelToNext": null
+          }
+        ]
+      }
+    },
+    "seconds": 11.5,
+    "problems": []
+  },
+  {
+    "id": "E3",
+    "question": "Plan one day in Myeongdong and Namsan, Seoul.  →  Add a coffee break at a cafe in the afternoon.",
+    "status": 200,
+    "body": {
+      "kind": "itinerary",
+      "reply": "Here's your updated one-day itinerary in Myeongdong and Namsan, Seoul, including a delightful afternoon coffee break.",
+      "places": [],
+      "itinerary": {
+        "stops": [
+          {
+            "time": "10:00-11:00",
+            "place": {
+              "name": "Myeongdong Cathedral",
+              "area": "Myeongdong",
+              "reason": "A historic cathedral offering a peaceful atmosphere.",
+              "howToGetThere": "Located in the heart of Myeongdong, easily accessible by foot.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://visitmyeongdong.com/itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5633851,
+                "lng": 126.987436
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 5
+            }
+          },
+          {
+            "time": "11:00-13:00",
+            "place": {
+              "name": "Myeongdong Shopping Streets",
+              "area": "Myeongdong",
+              "reason": "A bustling area known for its vibrant shopping scene.",
+              "howToGetThere": "Just a short walk from Myeongdong Cathedral.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://visitmyeongdong.com/itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5641885,
+                "lng": 126.98611799999998
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 15
+            }
+          },
+          {
+            "time": "13:00-14:00",
+            "place": {
+              "name": "Lunch in Myeongdong",
+              "area": "Myeongdong",
+              "reason": "Enjoy a variety of Korean dishes in the area.",
+              "howToGetThere": "Numerous restaurants are available within walking distance.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://visitmyeongdong.com/itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5626417,
+                "lng": 126.9855302
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 15
+            }
+          },
+          {
+            "time": "14:00-15:30",
+            "place": {
+              "name": "Pines Café",
+              "area": "Myeongdong",
+              "reason": "Offers a rooftop terrace with beautiful views of Myeongdong Cathedral.",
+              "howToGetThere": "Located on the third floor of PAGE Myeongdong, a short walk from the shopping streets.",
+              "tip": "Be aware that customers are not allowed to switch tables once seated, and dining may be limited to 90 minutes during busy periods.",
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://danielfooddiary.com/2026/11/07/myeongdongcafe",
+              "fromKoreanSource": false,
+              "bookingTips": "Check the café's reservation policy and be mindful of seating time limits.",
+              "position": {
+                "lat": 37.564381499999996,
+                "lng": 126.986213
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 5
+            }
+          },
+          {
+            "time": "15:30-17:00",
+            "place": {
+              "name": "Namsan Cable Car",
+              "area": "Namsan",
+              "reason": "Provides a scenic ride up to Namsan Seoul Tower.",
+              "howToGetThere": "Accessible via a short walk from the café.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://koriq.kr/myeongdong-one-day-itinerary",
+              "fromKoreanSource": true,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.556590799999995,
+                "lng": 126.9839744
+              },
+              "mapNote": null
+            },
+            "travelToNext": null
+          }
+        ]
+      }
+    },
+    "seconds": 12.2,
+    "problems": [],
+    "kept": 4,
+    "beforeCount": 5
+  },
+  {
+    "id": "P4",
+    "question": "Please plan a full day in Busan, including some seafood and a beach.",
+    "status": 200,
+    "body": {
+      "kind": "itinerary",
+      "reply": "Here's a full-day itinerary in Busan that includes seafood and a beach experience.",
+      "places": [],
+      "itinerary": {
+        "stops": [
+          {
+            "time": "06:00-08:00",
+            "place": {
+              "name": "Haedong Yonggungsa Temple",
+              "area": "Haeundae",
+              "reason": "A seaside temple offering stunning sunrise views over the ocean.",
+              "howToGetThere": "Take Bus 181 from Haeundae Station to Haedong Yonggungsa Temple; the journey takes about 12 minutes, followed by a 15-minute walk.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://koreagonow.com/busan-1-day-itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 35.1884543,
+                "lng": 129.2231109
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "bus",
+              "minutes": 15
+            }
+          },
+          {
+            "time": "08:30-10:00",
+            "place": {
+              "name": "Haeundae Beach",
+              "area": "Haeundae",
+              "reason": "Busan's most famous beach, ideal for a morning stroll and relaxation.",
+              "howToGetThere": "From Haedong Yonggungsa Temple, take Bus 181 back to Haeundae Station, then walk to the beach.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://koreagonow.com/busan-1-day-itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 35.158697499999995,
+                "lng": 129.16038419999998
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "subway",
+              "minutes": 30
+            }
+          },
+          {
+            "time": "12:00-13:30",
+            "place": {
+              "name": "Jagalchi Market",
+              "area": "Nampo",
+              "reason": "Korea's largest seafood market, offering fresh catches and local delicacies.",
+              "howToGetThere": "From Haeundae Station, take Line 2 to Seomyeon Station, transfer to Line 1, and ride to Jagalchi Station; the market is a 5-minute walk from the station.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://koreagonow.com/busan-1-day-itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 35.0966339,
+                "lng": 129.0307965
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 5
+            }
+          },
+          {
+            "time": "13:30-16:00",
+            "place": {
+              "name": "Gukje Market",
+              "area": "Nampo",
+              "reason": "A sprawling traditional market adjacent to Jagalchi, perfect for shopping and street food.",
+              "howToGetThere": "Walk from Jagalchi Market to Gukje Market; they are located next to each other.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://koreagonow.com/busan-1-day-itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 35.1013575,
+                "lng": 129.0281978
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "subway",
+              "minutes": 30
+            }
+          },
+          {
+            "time": "16:00-18:30",
+            "place": {
+              "name": "Haeundae Beach",
+              "area": "Haeundae",
+              "reason": "Enjoy the late afternoon at Busan's most visited beach, ideal for relaxation and sunset views.",
+              "howToGetThere": "From Gukje Market, take Line 1 to Seomyeon Station, transfer to Line 2, and ride to Haeundae Station; the beach is a 10-minute walk from the station.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://koreagonow.com/busan-1-day-itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 35.158697499999995,
+                "lng": 129.16038419999998
+              },
+              "mapNote": null
+            },
+            "travelToNext": null
+          }
+        ]
+      }
+    },
+    "seconds": 11.1,
+    "problems": []
+  },
+  {
+    "id": "P5",
+    "question": "Plan a day trip in Jeju City for a first-time visitor.",
+    "status": 200,
+    "body": {
+      "kind": "itinerary",
+      "reply": "Here's a suggested day trip in Jeju City for a first-time visitor, focusing on the city's highlights and local experiences.",
+      "places": [],
+      "itinerary": {
+        "stops": [
+          {
+            "time": "09:00-10:30",
+            "place": {
+              "name": "Yongduam Rock (Dragon Head Rock)",
+              "area": "Jeju City",
+              "reason": "A unique volcanic formation resembling a dragon's head, offering picturesque coastal views.",
+              "howToGetThere": "Located near Jeju International Airport; a short taxi ride or a 20-minute walk from the city center.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.jeju-escape.com/itineraries/first-timer-jeju-itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 33.5157583,
+                "lng": 126.51163460000001
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 15
+            }
+          },
+          {
+            "time": "10:45-12:15",
+            "place": {
+              "name": "Dongmun Traditional Market",
+              "area": "Jeju City",
+              "reason": "A bustling market where you can sample local delicacies and shop for souvenirs.",
+              "howToGetThere": "A 15-minute walk from Yongduam Rock; located in the heart of Jeju City.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.jeju-escape.com/itineraries/first-timer-jeju-itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 33.5115133,
+                "lng": 126.5262564
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 20
+            }
+          },
+          {
+            "time": "12:35-14:05",
+            "place": {
+              "name": "Jeju National Museum",
+              "area": "Jeju City",
+              "reason": "Offers insights into Jeju's history, culture, and natural environment.",
+              "howToGetThere": "A 20-minute walk from Dongmun Market; located near the city center.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.jeju-escape.com/itineraries/first-timer-jeju-itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 33.5134213,
+                "lng": 126.54872449999999
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 15
+            }
+          },
+          {
+            "time": "14:20-15:50",
+            "place": {
+              "name": "Samseonghyeol Shrine",
+              "area": "Jeju City",
+              "reason": "A historic site dedicated to the island's founding figures, offering a peaceful retreat.",
+              "howToGetThere": "A 15-minute walk from Jeju National Museum; situated in the city center.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.jeju-escape.com/itineraries/first-timer-jeju-itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 33.504148,
+                "lng": 126.5289932
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 20
+            }
+          },
+          {
+            "time": "16:10-17:40",
+            "place": {
+              "name": "Sarabong Peak",
+              "area": "Jeju City",
+              "reason": "Provides panoramic views of Jeju City and the surrounding coastline, especially at sunset.",
+              "howToGetThere": "A 20-minute walk from Samseonghyeol Shrine; located near the city center.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.jeju-escape.com/itineraries/first-timer-jeju-itinerary",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 33.517740499999995,
+                "lng": 126.54491349999999
+              },
+              "mapNote": null
+            },
+            "travelToNext": null
+          }
+        ]
+      }
+    },
+    "seconds": 12.8,
+    "problems": []
+  },
+  {
+    "id": "P6",
+    "question": "I want a one-day plan in Jeonju Hanok Village with local food.",
+    "status": 200,
+    "body": {
+      "kind": "itinerary",
+      "reply": "Here's a one-day itinerary to explore Jeonju Hanok Village and savor its local cuisine.",
+      "places": [],
+      "itinerary": {
+        "stops": [
+          {
+            "time": "09:00-11:00",
+            "place": {
+              "name": "Jeonju Hanok Village",
+              "area": "Jeonju",
+              "reason": "Explore the traditional Korean houses and cultural sites in the village.",
+              "howToGetThere": "From Jeonju Station, take a taxi or bus to the village entrance.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.oneworld24.co/blog/en/jeonju-hanok-village-one-day",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 35.8175376,
+                "lng": 127.1520417
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 10
+            }
+          },
+          {
+            "time": "11:00-12:30",
+            "place": {
+              "name": "Gyeonggijeon Shrine",
+              "area": "Jeonju",
+              "reason": "Visit the shrine housing the portrait of King Taejo, the founder of the Joseon Dynasty.",
+              "howToGetThere": "Located within the Hanok Village; a short walk from the main entrance.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.oneworld24.co/blog/en/jeonju-hanok-village-one-day",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 35.8153492,
+                "lng": 127.14979380000001
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 5
+            }
+          },
+          {
+            "time": "14:00-15:30",
+            "place": {
+              "name": "Jeondong Cathedral",
+              "area": "Jeonju",
+              "reason": "Admire the Romanesque architecture of this historic cathedral.",
+              "howToGetThere": "A short walk from Seongmidang; head west through the village.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.oneworld24.co/blog/en/jeonju-hanok-village-one-day",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 35.8133631,
+                "lng": 127.14926069999999
+              },
+              "mapNote": null
+            },
+            "travelToNext": null
+          }
+        ]
+      }
+    },
+    "seconds": 11.2,
+    "problems": []
+  },
+  {
+    "id": "P7",
+    "question": "Plan a day in Gyeongju to see the historical sites.",
+    "status": 200,
+    "body": {
+      "kind": "itinerary",
+      "reply": "Here's a suggested itinerary to explore Gyeongju's historical sites in a day. Please verify opening hours and admission fees before your visit.",
+      "places": [],
+      "itinerary": {
+        "stops": [
+          {
+            "time": "08:30-10:00",
+            "place": {
+              "name": "Bulguksa Temple",
+              "area": "Gyeongju",
+              "reason": "A UNESCO World Heritage site showcasing exquisite Silla-era architecture and Buddhist art.",
+              "howToGetThere": "Take bus 10 or 11 from Gyeongju Intercity Bus Terminal to Bulguksa Temple.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.travel4history.com/asia/south-korea/gyeongju",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 35.7898804,
+                "lng": 129.3318909
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "bus",
+              "minutes": 30
+            }
+          },
+          {
+            "time": "10:30-12:00",
+            "place": {
+              "name": "Seokguram Grotto",
+              "area": "Gyeongju",
+              "reason": "An ancient Buddhist cave temple offering panoramic views and intricate stone carvings.",
+              "howToGetThere": "From Bulguksa Temple, take bus 10 or 11 to Seokguram Grotto.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.travel4history.com/asia/south-korea/gyeongju",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 35.7951981,
+                "lng": 129.3503599
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "bus",
+              "minutes": 30
+            }
+          },
+          {
+            "time": "14:15-15:45",
+            "place": {
+              "name": "Cheomseongdae Observatory",
+              "area": "Gyeongju",
+              "reason": "Asia's oldest surviving astronomical observatory, dating back to the 7th century.",
+              "howToGetThere": "Walk from Gyeongju National Museum to Cheomseongdae Observatory.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://english.visitkorea.or.kr/svc/whereToGo/hdrdslt/hdrdsltView.do?crsSn=564907",
+              "fromKoreanSource": true,
+              "bookingTips": null,
+              "position": {
+                "lat": 35.8347306,
+                "lng": 129.2190014
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 15
+            }
+          },
+          {
+            "time": "16:00-17:30",
+            "place": {
+              "name": "Donggung Palace and Wolji Pond",
+              "area": "Gyeongju",
+              "reason": "A 7th-century palace complex with beautifully illuminated pavilions reflected in the pond.",
+              "howToGetThere": "Walk from Cheomseongdae Observatory to Donggung Palace and Wolji Pond.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.travel4history.com/asia/south-korea/gyeongju",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 35.8348173,
+                "lng": 129.2265645
+              },
+              "mapNote": null
+            },
+            "travelToNext": null
+          }
+        ]
+      }
+    },
+    "seconds": 10.7,
+    "problems": []
+  },
+  {
+    "id": "P8",
+    "question": "Make me a day plan around Gangnam and Jamsil, Seoul.",
+    "status": 200,
+    "body": {
+      "kind": "itinerary",
+      "reply": "Here's a day plan to explore Gangnam and Jamsil in Seoul, combining cultural sites, shopping, and leisure activities.",
+      "places": [],
+      "itinerary": {
+        "stops": [
+          {
+            "time": "09:30-11:00",
+            "place": {
+              "name": "Bongeunsa Temple",
+              "area": "Gangnam",
+              "reason": "A serene Buddhist temple offering a peaceful retreat amidst the bustling city.",
+              "howToGetThere": "Located directly across from COEX Mall; accessible via subway Line 2 to Samseong Station, Exit 6.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.seoultourism.org/gangnam-guide",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.514852,
+                "lng": 127.0573766
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 5
+            }
+          },
+          {
+            "time": "11:00-13:00",
+            "place": {
+              "name": "COEX Mall and Starfield Library",
+              "area": "Gangnam",
+              "reason": "A vast shopping complex featuring the impressive Starfield Library with towering bookshelves.",
+              "howToGetThere": "From Bongeunsa Temple, walk approximately 5 minutes to COEX Mall.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.seoultourism.org/gangnam-guide",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5118346,
+                "lng": 127.05978710000001
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "subway",
+              "minutes": 15
+            }
+          },
+          {
+            "time": "13:00-14:30",
+            "place": {
+              "name": "Lunch at Tosokchon Samgyetang",
+              "area": "Gangnam",
+              "reason": "Renowned for its traditional Korean ginseng chicken soup, a local favorite.",
+              "howToGetThere": "From COEX Mall, take subway Line 2 from Samseong Station to Gangnam Station, Exit 10; it's a short walk from there.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.seoultourism.org/gangnam-guide",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.577778599999995,
+                "lng": 126.9715909
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "subway",
+              "minutes": 15
+            }
+          },
+          {
+            "time": "18:00-20:00",
+            "place": {
+              "name": "Dinner at Maple Tree House",
+              "area": "Gangnam",
+              "reason": "Offers a cozy atmosphere with a variety of Korean dishes, popular among locals.",
+              "howToGetThere": "From Lotte World Mall, take subway Line 2 from Jamsil Station to Gangnam Station, Exit 10; it's a short walk from there.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.seoultourism.org/gangnam-guide",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.535049,
+                "lng": 126.9939672
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 10
+            }
+          },
+          {
+            "time": "20:00-22:00",
+            "place": {
+              "name": "Banpo Hangang Park",
+              "area": "Banpo",
+              "reason": "A scenic riverside park offering beautiful night views of the city skyline and the Banpo Bridge Rainbow Fountain.",
+              "howToGetThere": "From Maple Tree House, walk approximately 10 minutes to Banpo Hangang Park.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.seoultourism.org/gangnam-guide",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5103503,
+                "lng": 126.9952372
+              },
+              "mapNote": null
+            },
+            "travelToNext": null
+          }
+        ]
+      }
+    },
+    "seconds": 10.1,
+    "problems": []
+  },
+  {
+    "id": "P9",
+    "question": "Plan a relaxing day in Incheon, including Chinatown.",
+    "status": 200,
+    "body": {
+      "kind": "itinerary",
+      "reply": "Here's a relaxing day plan in Incheon, including Chinatown:\n\nMorning:\n\n10:00-11:30\n\nIncheon Chinatown\n\nExplore Korea's only official Chinatown, established in 1884, featuring red gates, mural-lined lanes, and century-old noodle houses. It's directly accessible from Incheon Station (Line 1, Exit 1). (quartzmountain.org)\n\n11:30-13:00\n\nSongwol-dong Fairy Tale Village\n\nA short walk from Chinatown, this village is adorned with murals depicting classic fairy tales, offering a whimsical atmosphere. It's a 10-minute walk from Chinatown. (korea.stripes.com)\n\nAfternoon:\n\n13:00-14:30\n\nLunch at Yeongyeong Chinatown Main Branch\n\nEnjoy authentic Chinese cuisine at this renowned restaurant, known for its delicious dishes. Located at 41 Chinatown-ro, Jung-gu, Incheon, it's a 5-minute walk from Songwol-dong Fairy Tale Village. (korea.stripes.com)\n\n14:30-16:00\n\nJayu Park (Freedom Park)\n\nRelax in this historic park offering scenic views and a peaceful environment. It's a 15-minute walk from the restaurant. (incheon-trip.com)\n\nEvening:\n\n16:00-17:30\n\nWolmido Island\n\nEnjoy a leisurely stroll along the beach and perhaps ride the Wolmi Sea Train, Korea's longest urban tourist monorail. It's a 20-minute bus ride from Jayu Park. (english.visitkorea.or.kr)\n\n17:30-19:00\n\nDinner at a Wolmido Seafood Restaurant\n\nSavor fresh seafood dishes at one of the local restaurants overlooking the sea. The area is known for its seafood offerings.\n\n19:00 onwards\n\nReturn to Accommodation or Explore Incheon Nightlife\n\nDepending on your preference, you can head back to your accommodation or explore more of Incheon's vibrant nightlife.\n\nEnjoy your relaxing day in Incheon!",
+      "places": [],
+      "itinerary": {
+        "stops": [
+          {
+            "time": "10:00-11:30",
+            "place": {
+              "name": "Incheon Chinatown",
+              "area": "Incheon",
+              "reason": "Explore Korea's only official Chinatown, established in 1884, featuring red gates, mural-lined lanes, and century-old noodle houses.",
+              "howToGetThere": "Directly accessible from Incheon Station (Line 1, Exit 1).",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://quartzmountain.org/place/south-korea/incheon/incheon-chinatown",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.475589,
+                "lng": 126.61788489999999
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 10
+            }
+          },
+          {
+            "time": "11:30-13:00",
+            "place": {
+              "name": "Songwol-dong Fairy Tale Village",
+              "area": "Incheon",
+              "reason": "A short walk from Chinatown, this village is adorned with murals depicting classic fairy tales, offering a whimsical atmosphere.",
+              "howToGetThere": "A 10-minute walk from Chinatown.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://korea.stripes.com/travel/incheon-chinatown-guide-korea.html",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.4776611,
+                "lng": 126.62058270000001
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 5
+            }
+          },
+          {
+            "time": "13:00-14:30",
+            "place": {
+              "name": "Yeongyeong Chinatown Main Branch",
+              "area": "Incheon",
+              "reason": "Enjoy authentic Chinese cuisine at this renowned restaurant, known for its delicious dishes.",
+              "howToGetThere": "Located at 41 Chinatown-ro, Jung-gu, Incheon, it's a 5-minute walk from Songwol-dong Fairy Tale Village.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://korea.stripes.com/travel/incheon-chinatown-guide-korea.html",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.4756149,
+                "lng": 126.61970160000001
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 15
+            }
+          },
+          {
+            "time": "14:30-16:00",
+            "place": {
+              "name": "Jayu Park (Freedom Park)",
+              "area": "Incheon",
+              "reason": "Relax in this historic park offering scenic views and a peaceful environment.",
+              "howToGetThere": "A 15-minute walk from the restaurant.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.incheon-trip.com/destinations/incheon-chinatown-open-port",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.4750752,
+                "lng": 126.62201619999999
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "bus",
+              "minutes": 20
+            }
+          },
+          {
+            "time": "16:00-17:30",
+            "place": {
+              "name": "Wolmido Island",
+              "area": "Incheon",
+              "reason": "Enjoy a leisurely stroll along the beach and perhaps ride the Wolmi Sea Train, Korea's longest urban tourist monorail.",
+              "howToGetThere": "A 20-minute bus ride from Jayu Park.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://english.visitkorea.or.kr/svc/whereToGo/hdrdslt/hdrdsltView.do?crsSn=379813",
+              "fromKoreanSource": true,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.4754003,
+                "lng": 126.59781480000001
+              },
+              "mapNote": null
+            },
+            "travelToNext": null
+          }
+        ]
+      }
+    },
+    "seconds": 14.5,
+    "problems": []
+  },
+  {
+    "id": "P10",
+    "question": "Plan a day in Seoul for K-drama fans, around Itaewon and Hannam-dong.",
+    "status": 200,
+    "body": {
+      "kind": "itinerary",
+      "reply": "Embark on a K-drama-themed day in Seoul's Itaewon and Hannam-dong, exploring iconic filming locations and vibrant streets.",
+      "places": [],
+      "itinerary": {
+        "stops": [
+          {
+            "time": "10:00-11:30",
+            "place": {
+              "name": "Noksapyeong Overpass",
+              "area": "Itaewon",
+              "reason": "Featured in 'Itaewon Class' as a significant meeting spot.",
+              "howToGetThere": "From Noksapyeong Station (Line 6), Exit 1, walk towards the overpass.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://english.seoul.go.kr/filming-locations-of-the-tv-drama-itaewon-class-around-itaewon-and-haebangchon",
+              "fromKoreanSource": true,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.534945799999996,
+                "lng": 126.98707089999999
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 10
+            }
+          },
+          {
+            "time": "11:30-13:00",
+            "place": {
+              "name": "Danbam (Seoul Bam) Restaurant",
+              "area": "Itaewon",
+              "reason": "The real-life restaurant where 'Danbam' from 'Itaewon Class' was filmed.",
+              "howToGetThere": "Located at 57, Noksapyeongdaero 40-gil, Yongsan-gu, Seoul.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://english.seoul.go.kr/filming-locations-of-the-tv-drama-itaewon-class-around-itaewon-and-haebangchon",
+              "fromKoreanSource": true,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5344269,
+                "lng": 126.98897119999998
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 15
+            }
+          },
+          {
+            "time": "13:00-14:30",
+            "place": {
+              "name": "Gyeongnidan-gil Street",
+              "area": "Itaewon",
+              "reason": "Known for its vibrant atmosphere and diverse eateries, featured in 'Itaewon Class'.",
+              "howToGetThere": "From Danbam, walk east towards Gyeongnidan-gil Street.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://english.seoul.go.kr/filming-locations-of-the-tv-drama-itaewon-class-around-itaewon-and-haebangchon",
+              "fromKoreanSource": true,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.538432,
+                "lng": 126.98754659999999
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 20
+            }
+          },
+          {
+            "time": "14:30-16:00",
+            "place": {
+              "name": "Baek In-je House",
+              "area": "Bukchon",
+              "reason": "Historic hanok featured in 'Reborn Rich', offering a glimpse into traditional Korean architecture.",
+              "howToGetThere": "From Gyeongnidan-gil, take Line 6 from Itaewon Station to Anguk Station (Exit 2), then walk to Baek In-je House.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://www.seoulsums.com/p/kdrama-filming-locations-korea.html",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.580642,
+                "lng": 126.9840665
+              },
+              "mapNote": null
+            },
+            "travelToNext": {
+              "mode": "walk",
+              "minutes": 15
+            }
+          },
+          {
+            "time": "16:00-17:30",
+            "place": {
+              "name": "Gamgodang-gil Street",
+              "area": "Bukchon",
+              "reason": "Scenic street featured in 'Our Beloved Summer', known for its picturesque hanok houses.",
+              "howToGetThere": "From Baek In-je House, walk to Gamgodang-gil Street.",
+              "tip": null,
+              "source": null,
+              "verified": true,
+              "sourceUrl": "https://seoulpin.com/k-pop-k-drama/kdrama-filming-locations-seoul",
+              "fromKoreanSource": false,
+              "bookingTips": null,
+              "position": {
+                "lat": 37.5778592,
+                "lng": 126.9823572
+              },
+              "mapNote": null
+            },
+            "travelToNext": null
+          }
+        ]
+      }
+    },
+    "seconds": 13,
+    "problems": []
+  }
+]
