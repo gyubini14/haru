@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Haru
 
-## Getting Started
+> **Let your day shine, even in a new Korea**
 
-First, run the development server:
+한국을 여행 중이거나 곧 여행할 **외국인을 위한 영어 여행가이드 챗봇**입니다.
+맛집·숙소·교통·사진 스팟은 물론 한국 드라마·아이돌 촬영지까지, 한국어를 몰라도 영어 대화 한 번으로 찾고 지도에서 위치를 확인하고 하루 일정까지 받을 수 있습니다.
+
+- 작성자: Gyubgyub
+- 접속 주소: https://haru-omega-ecru.vercel.app
+
+## 왜 만들었나
+
+외국인 여행자는 한국어 중심의 네이버·카카오 앱, 블로그, 영상에 흩어진 정보를 여러 번 검색해야 하고, 영어로 잘 설명된 숙소만 찾게 됩니다. 드라마·아이돌 촬영지는 팬 커뮤니티를 일일이 뒤져야 합니다. Haru는 이 과정을 **한 번의 영어 대화**로 줄이는 것을 목표로 합니다.
+
+## 주요 기능
+
+| 기능 | 설명 |
+|---|---|
+| **영어 여행 추천 (M1)** | 맛집·숙소·교통·사진 스팟을 영어로 추천합니다. 장소마다 추천 이유 1문장과 가는 방법 1문장, 한 번에 최대 3곳. 숙소는 지역·예산·인원을 먼저 되묻고, 한국인 후기를 근거로 예약 주의점과 함께 안내합니다. |
+| **드라마·아이돌 촬영지 (M2)** | 작품이나 가수 이름을 입력하면 촬영지, 가는 방법, 방문 팁을 안내하고 이웃을 배려하라는 주의사항을 함께 보여 줍니다. 확인되지 않은 촬영지는 지어내지 않습니다. |
+| **하루 일정 짜기 (N1)** | 장소 3~5곳을 시간대와 이동 방법·시간과 함께 제안하고, 수정을 요청하면 요청한 부분만 바꿉니다. |
+| **지도 (N3)** | 가장 최근 답변의 장소를 지도에 번호 마커로 표시합니다. "A에서 B까지" 교통 질문은 출발지 A·도착지 B만 표시합니다. |
+| **내 위치 사용** | 사용자가 허용한 경우에만, 약 1km로 줄인 좌표로 반경 2km 안의 장소를 추천합니다. 저장하지 않습니다. |
+| **사진·한글 이름** | Google 장소 검색의 대표 사진 1장(촬영자 표기 포함)과 한글 이름을 영어 이름과 함께 보여 줍니다. |
+| **New chat** | 새로고침 없이 대화·지도를 비우고 처음 화면으로 돌아갑니다. |
+
+### 지어내지 않기 위한 장치
+
+- 매번 **웹 검색**을 하고, 검색 결과에 실제로 있는 주소를 출처로 가진 장소만 보여 줍니다. 확인하지 못한 장소는 제외합니다.
+- 장소의 좌표·한글 이름·사진은 AI가 아니라 **Google 장소 검색**이 알려 주는 값만 씁니다.
+- 영어가 아닌 질문, 주제 밖 질문, 정보가 부족한 숙소 질문은 AI를 부르기 전에 코드가 먼저 처리합니다.
+- 악용 방지: 사용자(IP)당 분당 10회, 질문 300자 제한. 대화 내용은 서버에 저장하지 않습니다.
+
+## 기술 스택
+
+- **Next.js 16** (App Router) · React 19 · TypeScript · Tailwind CSS 4
+- **OpenAI API** (GPT-4o mini, 웹 검색 도구) — 서버에서만 호출
+- **Google Maps JavaScript API** (지도) · **Google Places API (New)** (좌표·한글 이름·사진, 서버에서만 호출)
+- **Vercel** 배포
+- 그 밖의 패키지: `openai`, `zod`, `@googlemaps/js-api-loader`, `@types/google.maps`
+
+## 문서 (심사 자료)
+
+| 문서 | 내용 |
+|---|---|
+| [PRD.md](PRD.md) | 기획서: 문제 정의, 목표, 이용 흐름, 기능과 AI가 지킬 규칙, 범위, 보안·개인정보, 기술 스택 |
+| [PLAN.md](PLAN.md) | 개발 계획서: 성공 기준과 현재 결과, 작업 순서(1~17), 요구사항 상태 |
+| [DESIGN.md](DESIGN.md) | 설계서: 구조, 데이터 흐름, 요청·응답 형식, 오류 처리 |
+| [CLAUDE.md](CLAUDE.md) | 개발 작업 규칙 |
+
+## 직접 실행하기
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+# 프로젝트 폴더에 .env 파일을 만들고 아래 표의 이름으로 키 값을 채웁니다
+npm run dev            # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`.env`에는 다음 값이 필요합니다. **키 값은 저장소에 올리지 마세요.**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| 이름 | 용도 | 사용 위치 |
+|---|---|---|
+| `OPENAI_API_KEY` | AI 답변과 웹 검색 | 서버 |
+| `GOOGLE_PLACES_API_KEY` | 장소 이름 → 좌표·한글 이름·사진 | 서버 |
+| `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | 지도 표시 (허용 도메인 제한 필요) | 브라우저 |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`npm run check:env`로 값이 들어 있는지(값 자체는 출력하지 않음) 확인할 수 있습니다. 점검용 스크립트는 `scripts/`에 있습니다.
 
-## Learn More
+## 알려진 한계
 
-To learn more about Next.js, take a look at the following resources:
+- 웹 검색 결과로 "그 주소가 검색 결과에 있다"까지만 확인하며, 그 페이지가 정말 그 내용을 말하는지는 코드로 확인하지 못합니다. 영업시간·가격은 "please verify"로 안내합니다.
+- 숙소의 한국인 후기 근거 비중이 높지 않습니다(점검에서 약 17%).
+- 아이돌 촬영지 질문은 결과가 불안정해 "정보 없음"이 나올 수 있습니다.
+- 분당 횟수 제한은 서버 메모리에서 세므로, 여러 서버에서는 느슨해질 수 있습니다.
+- 하루 일정에서 이동이 30분을 넘으면 안내 문구와 함께 그대로 보여 줍니다.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 범위 밖
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+회원가입·로그인, 대화 저장, 예약·결제, 실시간 정보, 영어 이외 언어 지원, 관리자 화면은 만들지 않았습니다.
