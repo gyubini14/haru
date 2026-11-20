@@ -1,16 +1,18 @@
 import type { Response as OpenAIResponse } from "openai/resources/responses/responses";
 import { z } from "zod";
+import { distanceKm } from "@/lib/geo";
 import {
   MAX_ANSWER_PLACES,
+  NEARBY_RADIUS_KM,
   OPENAI_MAX_OUTPUT_TOKENS,
   OPENAI_MODEL,
 } from "@/lib/constants";
 import { MESSAGES } from "@/lib/messages";
 import { getOpenAIClient } from "@/lib/server/openaiClient";
-import { attachPositions } from "@/lib/server/places";
+import { attachPositions, describeLocation } from "@/lib/server/places";
 import { buildInstructions } from "@/lib/server/prompts";
 import { triage, type Triage } from "@/lib/server/triage";
-import type { ChatMessage, ChatResponse, Place } from "@/lib/types";
+import type { ChatMessage, ChatResponse, Place, Position } from "@/lib/types";
 
 // Design Ref: §4.4 — AI가 돌려주는 "글 + 장소 목록" 형식. 지도·일정이 이 장소 목록을 그대로 쓴다.
 // source_url은 AI가 적지만, 실제 웹 검색 결과에 있는 주소인지는 코드가 확인한다.
@@ -198,7 +200,7 @@ function toChatResponse(
 }
 
 /** 분류 결과가 거절·되묻기이면 AI 답변 없이 곧바로 보낼 응답을 돌려준다. 아니면 null. */
-function answerFromTriage(t: Triage): ChatResponse | null {
+function answerFromTriage(t: Triage, hasLocation: boolean): ChatResponse | null {
   // M1 규칙 7: 영어가 아닌 질문에는 내용에 답하지 않고 고정 안내만 보낸다.
   if (!t.is_english) {
     return { kind: "refusal", reply: MESSAGES.askInEnglish, places: [], itinerary: null };
@@ -218,7 +220,8 @@ function answerFromTriage(t: Triage): ChatResponse | null {
   // M1 규칙 4: 숙소는 지역·예산·인원 중 빠진 것을 모두 한 번에 되묻고, 다 모이기 전에는 추천하지 않는다.
   if (t.topic === "accommodation") {
     const missing: string[] = [];
-    if (!t.area_known) missing.push(MESSAGES.accommodationItems.area);
+    // 내 위치를 켜 두었으면 지역은 이미 아는 것으로 본다
+    if (!t.area_known && !hasLocation) missing.push(MESSAGES.accommodationItems.area);
     if (!t.budget_known) missing.push(MESSAGES.accommodationItems.budget);
     if (!t.guests_known) missing.push(MESSAGES.accommodationItems.guests);
     if (missing.length > 0) {
@@ -238,29 +241,40 @@ function answerFromTriage(t: Triage): ChatResponse | null {
  * 그래서 숙소 질문은 마지막 메시지에 한국어 검색어를 덧붙여 한국인 블로그·후기가 함께 검색되게 한다.
  * 실험에서 영어 요청만 보냈을 때 한국 사이트가 17개 중 0개였고, 이 방식에서는 29개 중 9개였다.
  */
-function withKoreanSearch(messages: ChatMessage[], koreanQuery: string | null) {
+function withKoreanSearch(
+  messages: ChatMessage[],
+  koreanQuery: string | null,
+  nearArea: string | null,
+) {
   const input = messages.map((m) => ({ role: m.role, content: m.content }));
-  if (!koreanQuery) return input;
   const last = input[input.length - 1];
+  // 내 위치를 켠 경우: 검색이 그 주변을 찾도록 가까운 역·장소 이름을 덧붙인다
+  if (nearArea) last.content = `${last.content}\n\n(The user is currently near ${nearArea}, Korea. Search for places around there.)`;
+  if (!koreanQuery) return input;
   last.content = `${last.content}\n\nMake two separate web searches: first the English request above, second with the Korean query: ${koreanQuery} 네이버 블로그`;
   return input;
 }
 
 /** 최근 대화를 분류한 뒤, 필요한 경우에만 웹 검색으로 확인한 Haru의 답변(글 + 장소 목록)을 받는다. */
-export async function askHaru(messages: ChatMessage[]): Promise<ChatResponse> {
+export async function askHaru(
+  messages: ChatMessage[],
+  // 사용자가 "내 위치 사용"을 켠 경우에만 있다. 이미 약 1km로 줄인 좌표이며 저장하지 않는다.
+  location: Position | null = null,
+): Promise<ChatResponse> {
   // 1단계: 분류 (웹 검색 없음, 가볍고 빠름)
   const classified = await triage(messages);
-  const early = answerFromTriage(classified);
+  const early = answerFromTriage(classified, location !== null);
   if (early) return early;
 
   // 2단계: 웹 검색을 쓰는 답변. 숙소·촬영지는 한국어 검색어로도 한국 사이트를 찾게 한다.
   const isFilming = classified.topic === "filming_location";
   const koreanQuery =
     classified.topic === "accommodation" || isFilming ? classified.korean_search_query : null;
+  const nearArea = location ? await describeLocation(location) : null;
   const response = await getOpenAIClient().responses.create({
     model: OPENAI_MODEL,
-    instructions: buildInstructions(isFilming),
-    input: withKoreanSearch(messages, koreanQuery),
+    instructions: buildInstructions(isFilming, location, nearArea),
+    input: withKoreanSearch(messages, koreanQuery, nearArea),
     tools: [{ type: "web_search", user_location: { type: "approximate", country: "KR" } }],
     include: ["web_search_call.action.sources"],
     // 매번 웹 검색을 하게 한다. 검색을 건너뛰면 출처 주소를 확인할 수 없어 장소가 모두 걸러진다.
@@ -284,5 +298,15 @@ export async function askHaru(messages: ChatMessage[]): Promise<ChatResponse> {
   const namedWork = isFilming ? toPlainText(classified.named_work ?? "") || null : null;
   const chat = toChatResponse(answer, collectSearchedUrls(response), isFilming, namedWork);
   // 확인된 장소의 좌표를 Google 장소 검색으로 채운다 (실패해도 답변은 그대로 보낸다)
-  return { ...chat, places: await attachPositions(chat.places) };
+  const placed = await attachPositions(chat.places);
+  if (!location) return { ...chat, places: placed };
+
+  // 내 위치를 켠 경우: 반경 2km 안에 있다고 확인된 장소만 남긴다. (AI 지침만 믿지 않고 코드가 거리를 확인)
+  const nearby = placed.filter(
+    (p) => p.position !== null && distanceKm(location, p.position) <= NEARBY_RADIUS_KM,
+  );
+  if (placed.length > 0 && nearby.length === 0) {
+    return { kind: "answer", reply: MESSAGES.noPlacesNearby, places: [], itinerary: null };
+  }
+  return { ...chat, places: nearby };
 }

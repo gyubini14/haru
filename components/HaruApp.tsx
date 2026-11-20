@@ -7,10 +7,12 @@ import { useMemo } from "react";
 import { ChatPanel } from "@/components/chat/ChatPanel";
 import { MapView } from "@/components/map/MapView";
 import { useChat } from "@/hooks/useChat";
+import { useLocation } from "@/hooks/useLocation";
 import type { Place } from "@/lib/types";
 
 export function HaruApp() {
-  const chat = useChat();
+  const location = useLocation();
+  const chat = useChat(location.position);
 
   // 지도에는 "가장 최근 Haru 답변"의 장소만 올린다. (그 답변에 장소가 없으면 마커도 없다)
   const latestPlaces = useMemo<Place[]>(() => {
@@ -27,7 +29,7 @@ export function HaruApp() {
         <MapView places={latestPlaces} />
       </div>
       <div className="min-h-0 flex-1 lg:max-w-2xl lg:flex-none lg:basis-[42rem]">
-        <ChatPanel {...chat} />
+        <ChatPanel {...chat} location={location} />
       </div>
     </main>
   );

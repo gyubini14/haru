@@ -2,7 +2,7 @@
 // 작업 8: 질문 분류 지침 + 답변 지침(기본 역할·웹 검색·M1 규칙·숙소·형식).
 // M2(촬영지)·N1(일정) 규칙은 작업 9, 15에서 이어서 추가한다.
 
-import { MAX_ANSWER_PLACES } from "@/lib/constants";
+import { MAX_ANSWER_PLACES, NEARBY_RADIUS_KM } from "@/lib/constants";
 
 // ── 1단계: 질문 분류 (웹 검색 없이 가볍게) ─────────────────────────────
 
@@ -64,14 +64,29 @@ export const FORMAT_INSTRUCTIONS = `Return your answer in the required JSON form
   K-drama, film or artist for a filming location; otherwise null. "tip" may be null.
   Also give "booking_tips" as described above.`;
 
-/** 답변 단계의 시스템 지침. 촬영지 질문일 때만 M2 규칙을 덧붙인다. */
-export function buildInstructions(isFilmingQuestion = false): string {
+// PRD 6번: 내 위치 사용. 좌표는 이미 약 1km로 줄인 값이다.
+export function nearbyInstructions(
+  location: { lat: number; lng: number },
+  nearArea: string | null,
+): string {
+  return `The user shares an approximate location: latitude ${location.lat}, longitude ${location.lng} (rounded to about 1 km)${nearArea ? `, close to ${nearArea}` : ""}.
+- Recommend only places within ${NEARBY_RADIUS_KM} km of this location, and say how to get there from the area.
+- Do not ask the user for an area, because you already have one. If nothing matches within ${NEARBY_RADIUS_KM} km, return an empty places list.`;
+}
+
+/** 답변 단계의 시스템 지침. 촬영지 질문일 때만 M2 규칙을, 내 위치를 켰을 때만 근처 규칙을 덧붙인다. */
+export function buildInstructions(
+  isFilmingQuestion = false,
+  location: { lat: number; lng: number } | null = null,
+  nearArea: string | null = null,
+): string {
   return [
     BASE_INSTRUCTIONS,
     SEARCH_INSTRUCTIONS,
     M1_INSTRUCTIONS,
     ACCOMMODATION_INSTRUCTIONS,
     ...(isFilmingQuestion ? [FILMING_INSTRUCTIONS] : []),
+    ...(location ? [nearbyInstructions(location, nearArea)] : []),
     FORMAT_INSTRUCTIONS,
   ].join("\n\n");
 }

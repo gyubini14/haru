@@ -42,6 +42,21 @@ export const MESSAGES = {
   /** PRD M2 규칙 4: 촬영지에는 이웃을 배려하라는 주의사항을 함께 전달 */
   filmingEtiquette:
     "Please be quiet and respectful of nearby residents, and do not enter private property or film without permission.",
+  /** PRD 6번: 내 위치 반경 2km 안에 확인된 장소가 없을 때 */
+  noPlacesNearby:
+    "No places within 2 km of your location. You can turn off location sharing to search other areas.",
+  /** PRD 7번: 내 위치 안내 문구 (켜 둔 동안 화면에 표시) */
+  locationNotice: "Your location is used only to find nearby places and is not stored.",
+  /** 설계 제안: 내 위치 버튼 이름과 상태 */
+  useMyLocation: "Use my location",
+  stopUsingLocation: "Stop using my location",
+  gettingLocation: "Getting your location…",
+  /** PRD 6번: 거절·실패 시 지역 이름을 직접 입력하도록 안내 */
+  locationDenied:
+    "We couldn't get your location. You can type an area name instead, for example Hongdae.",
+  /** 설계 제안: 한국 밖에서는 근처 추천이 의미 없으므로 안내 */
+  locationOutsideKorea:
+    "Your location seems to be outside Korea, so it won't be used. You can type an area name instead.",
   /** PRD 5번: Google 장소 검색으로 좌표를 확인하지 못했을 때 장소 카드 아래에 보이는 이유 */
   noMapLocation: "its exact location could not be confirmed.",
   /** PRD 7번: 출처 확인 안내 */

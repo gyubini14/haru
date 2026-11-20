@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { responseToHistoryText } from "@/lib/chatHistory";
 import { MAX_HISTORY_MESSAGES } from "@/lib/constants";
 import { MESSAGES } from "@/lib/messages";
-import type { ApiError, ChatMessage, ChatResponse } from "@/lib/types";
+import type { ApiError, ChatMessage, ChatResponse, Position } from "@/lib/types";
 
 export interface UiMessage {
   id: number;
@@ -26,11 +26,18 @@ function toApiMessages(messages: UiMessage[]): ChatMessage[] {
 }
 
 /** 서버(/api/chat)에 대화를 보내 Haru의 답변을 받는다. 실패하면 영어 오류 문구를 담아 던진다. */
-async function askServer(conversation: UiMessage[]): Promise<ChatResponse> {
+async function askServer(
+  conversation: UiMessage[],
+  location: Position | null,
+): Promise<ChatResponse> {
   const res = await fetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages: toApiMessages(conversation) }),
+    // 위치는 "내 위치 사용"을 켠 경우에만 보낸다 (이미 약 1km로 줄인 좌표)
+    body: JSON.stringify({
+      messages: toApiMessages(conversation),
+      ...(location ? { location } : {}),
+    }),
   });
   if (!res.ok) {
     const body = (await res.json().catch(() => null)) as ApiError | null;
@@ -39,18 +46,23 @@ async function askServer(conversation: UiMessage[]): Promise<ChatResponse> {
   return (await res.json()) as ChatResponse;
 }
 
-export function useChat() {
+export function useChat(location: Position | null = null) {
   const [messages, setMessages] = useState<UiMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const nextId = useRef(1);
   const history = useRef<UiMessage[]>([]);
+  // 질문을 보내는 순간의 최신 위치를 쓰기 위해 ref에 둔다
+  const locationRef = useRef<Position | null>(location);
+  useEffect(() => {
+    locationRef.current = location;
+  }, [location]);
 
   const request = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await askServer(history.current);
+      const data = await askServer(history.current, locationRef.current);
       const reply: UiMessage = {
         id: nextId.current++,
         role: "assistant",

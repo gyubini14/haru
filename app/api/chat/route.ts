@@ -46,7 +46,7 @@ export async function POST(request: Request) {
 
   // 4) AI 호출. 대화 내용은 기록하지 않고, 실패하면 오류 종류만 남긴다.
   try {
-    return Response.json(await askHaru(validated.messages));
+    return Response.json(await askHaru(validated.messages, validated.location));
   } catch (error) {
     console.error(
       "chat: AI request failed:",

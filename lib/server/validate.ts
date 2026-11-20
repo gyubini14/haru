@@ -4,7 +4,8 @@ import {
   MAX_HISTORY_MESSAGE_CHARS,
   MAX_MESSAGE_LENGTH,
 } from "@/lib/constants";
-import type { ChatMessage } from "@/lib/types";
+import { isInKorea, roundPosition } from "@/lib/geo";
+import type { ChatMessage, Position } from "@/lib/types";
 
 const requestSchema = z.object({
   messages: z
@@ -15,10 +16,14 @@ const requestSchema = z.object({
       }),
     )
     .min(1),
+  // "내 위치 사용"을 켠 경우에만 온다. 모양이 틀리면 잘못된 요청으로 본다.
+  location: z
+    .object({ lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180) })
+    .optional(),
 });
 
 export type ValidationResult =
-  | { ok: true; messages: ChatMessage[] }
+  | { ok: true; messages: ChatMessage[]; location: Position | null }
   | { ok: false; reason: "invalid" | "too_long" };
 
 /**
@@ -58,5 +63,10 @@ export function validateChatRequest(body: unknown): ValidationResult {
     }
   }
 
-  return { ok: true, messages };
+  // 위치는 화면에서 줄여 보내지만, 정밀 좌표를 직접 보내도 그대로 쓰지 않도록 서버에서 한 번 더 줄인다.
+  // 한국 밖 좌표는 쓸 수 없으므로 없는 것으로 본다. (PRD 7번)
+  const rounded = parsed.data.location ? roundPosition(parsed.data.location) : null;
+  const location = rounded && isInKorea(rounded) ? rounded : null;
+
+  return { ok: true, messages, location };
 }
