@@ -2,14 +2,20 @@
 // 작업 8: 질문 분류 지침 + 답변 지침(기본 역할·웹 검색·M1 규칙·숙소·형식).
 // M2(촬영지)·N1(일정) 규칙은 작업 9, 15에서 이어서 추가한다.
 
-import { MAX_ANSWER_PLACES, NEARBY_RADIUS_KM } from "@/lib/constants";
+import {
+  MAX_ANSWER_PLACES,
+  MAX_ITINERARY_PLACES,
+  MAX_TRANSIT_MINUTES,
+  MIN_ITINERARY_PLACES,
+  NEARBY_RADIUS_KM,
+} from "@/lib/constants";
 
 // ── 1단계: 질문 분류 (웹 검색 없이 가볍게) ─────────────────────────────
 
 export const TRIAGE_INSTRUCTIONS = `You classify the latest user message of a travel chatbot for visitors in Korea. Look at the whole conversation.
 - "is_english": true if the user's latest message is written in English (a Korean place name inside an English sentence is fine).
 - "topic": what the user is asking about now. A follow-up question keeps the topic of the earlier turns. Use "greeting" for a hello or thanks with no question. Use "other" for anything that is not about food, accommodation, transport, photo spots, K-drama or idol filming locations, or a day plan in Korea (for example visas, currency exchange, weather, general chat).
-- "area_known", "budget_known", "guests_known": only for topic "accommodation". Each is true when the user has given that item (the area, the budget, the number of guests) anywhere in the conversation, or said they have no preference. Otherwise false. For every other topic set all three to true.
+- "area_known", "budget_known", "guests_known": only for topic "accommodation" and "day_plan". For "accommodation", each is true when the user has given that item (the area, the budget, the number of guests) anywhere in the conversation, or said they have no preference. Otherwise false. For "day_plan", only "area_known" matters: true when an area or city is named anywhere in the conversation, or places in an area were already recommended earlier in the conversation; set "budget_known" and "guests_known" to true. For every other topic set all three to true.
 - "korean_search_query": a natural Korean web search query, or null.
   - For topic "accommodation" when the area is known: to find Korean blog posts, community posts and booking-site reviews about places to stay there, for example the Korean name of the area followed by 숙소 추천 후기.
   - For topic "filming_location" when the user names a drama, film, artist or group: its Korean title or name followed by 촬영지 로케이션 (for example 도깨비 촬영지 로케이션). If no work or artist is named, null.
@@ -50,9 +56,19 @@ export const FILMING_INSTRUCTIONS = `For questions about filming locations of K-
 - Give at most ${MAX_ANSWER_PLACES} places in total, even if the user names several works.
 - If you cannot confirm any filming location, return an empty places list and say in "reply" that you found no confirmed information.`;
 
+// PRD 5번 N1: 하루 일정 짜기 규칙
+export const ITINERARY_INSTRUCTIONS = `For day plan (itinerary) requests:
+- Return "kind": "itinerary" and fill "stops" with ${MIN_ITINERARY_PLACES} to ${MAX_ITINERARY_PLACES} places in the order the user should visit them. "places" stays empty.
+- "reply" is a short friendly introduction of the plan (one or two sentences). Each stop is shown to the user as a card.
+- Each stop has "time" (a visit time range such as "10:00-11:30"), "place" (filled like a normal place, with "source_url" from your web search results), and "travel_to_next": how to get to the next stop ("mode", for example "subway" or "walk", and "minutes"). The last stop has "travel_to_next": null.
+- Keep every trip between two stops within ${MAX_TRANSIT_MINUTES} minutes by public transport, by choosing places in the same area.
+- Plan lunch and dinner at suitable times if the day is long enough. Do not state opening hours unless your search results confirm them; say "please verify" instead.
+- If the user asks to change the plan, change only what they asked and keep all other stops of the previous plan exactly as they were (same place, same "source_url" as written after "[source: ...]" in the previous plan), then return the full updated plan.`;
+
 export const FORMAT_INSTRUCTIONS = `Return your answer in the required JSON format:
-- "kind": "answer" for a normal answer or recommendation, "clarify" when you need
-  more information from the user before you can help.
+- "kind": "answer" for a normal answer or recommendation, "itinerary" for a day plan,
+  "clarify" when you need more information from the user before you can help.
+- "stops": only for "itinerary"; otherwise an empty list.
 - "reply": your message to the user. When you recommend places, keep it to a brief
   introduction, because each place is shown to the user as a separate card.
 - "places": specific venues or spots the user can visit (restaurants, cafes, hotels,
@@ -74,19 +90,35 @@ export function nearbyInstructions(
 - Do not ask the user for an area, because you already have one. If nothing matches within ${NEARBY_RADIUS_KM} km, return an empty places list.`;
 }
 
-/** 답변 단계의 시스템 지침. 촬영지 질문일 때만 M2 규칙을, 내 위치를 켰을 때만 근처 규칙을 덧붙인다. */
-export function buildInstructions(
-  isFilmingQuestion = false,
-  location: { lat: number; lng: number } | null = null,
-  nearArea: string | null = null,
-): string {
+interface InstructionOptions {
+  isFilming?: boolean;
+  isDayPlan?: boolean;
+  /** 내 위치를 켠 경우의 줄인 좌표 */
+  location?: { lat: number; lng: number } | null;
+  /** 내 위치 근처의 역·장소 이름 */
+  nearArea?: string | null;
+}
+
+/**
+ * 답변 단계의 시스템 지침. 촬영지 질문일 때만 M2 규칙을, 하루 일정일 때만 N1 규칙을,
+ * 내 위치를 켰을 때만 근처 규칙을 덧붙인다.
+ */
+export function buildInstructions({
+  isFilming = false,
+  isDayPlan = false,
+  location = null,
+  nearArea = null,
+}: InstructionOptions = {}): string {
+  const isFilmingQuestion = isFilming;
   return [
     BASE_INSTRUCTIONS,
     SEARCH_INSTRUCTIONS,
     M1_INSTRUCTIONS,
     ACCOMMODATION_INSTRUCTIONS,
     ...(isFilmingQuestion ? [FILMING_INSTRUCTIONS] : []),
-    ...(location ? [nearbyInstructions(location, nearArea)] : []),
+    ...(isDayPlan ? [ITINERARY_INSTRUCTIONS] : []),
+    // 하루 일정은 여러 곳을 도는 것이므로 2km 제한 대신 시작 지점 정보만 준다 (아래 nearbyInstructions 참고)
+    ...(location && !isDayPlan ? [nearbyInstructions(location, nearArea)] : []),
     FORMAT_INSTRUCTIONS,
   ].join("\n\n");
 }

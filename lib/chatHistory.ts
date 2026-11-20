@@ -14,7 +14,9 @@ export function responseToHistoryText(response: ChatResponse): string {
       const travel = stop.travelToNext
         ? ` (then ${stop.travelToNext.minutes} min by ${stop.travelToNext.mode})`
         : "";
-      lines.push(`- ${stop.time}: ${stop.place.name}, ${stop.place.area}${travel}`);
+      // 일정을 부분 수정할 때 바뀌지 않는 장소를 그대로 유지하도록 출처 주소도 함께 보낸다
+      const source = stop.place.sourceUrl ? ` [source: ${stop.place.sourceUrl}]` : "";
+      lines.push(`- ${stop.time}: ${stop.place.name}, ${stop.place.area}${travel}${source}`);
     }
   } else if (response.places.length > 0) {
     lines.push("Places:");

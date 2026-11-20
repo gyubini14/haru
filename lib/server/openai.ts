@@ -3,7 +3,10 @@ import { z } from "zod";
 import { distanceKm } from "@/lib/geo";
 import {
   MAX_ANSWER_PLACES,
+  MAX_ITINERARY_PLACES,
+  MIN_ITINERARY_PLACES,
   NEARBY_RADIUS_KM,
+  OPENAI_ITINERARY_MAX_OUTPUT_TOKENS,
   OPENAI_MAX_OUTPUT_TOKENS,
   OPENAI_MODEL,
 } from "@/lib/constants";
@@ -12,7 +15,7 @@ import { getOpenAIClient } from "@/lib/server/openaiClient";
 import { attachPositions, describeLocation } from "@/lib/server/places";
 import { buildInstructions } from "@/lib/server/prompts";
 import { triage, type Triage } from "@/lib/server/triage";
-import type { ChatMessage, ChatResponse, Place, Position } from "@/lib/types";
+import type { ChatMessage, ChatResponse, ItineraryStop, Place, Position } from "@/lib/types";
 
 // Design Ref: §4.4 — AI가 돌려주는 "글 + 장소 목록" 형식. 지도·일정이 이 장소 목록을 그대로 쓴다.
 // source_url은 AI가 적지만, 실제 웹 검색 결과에 있는 주소인지는 코드가 확인한다.
@@ -29,11 +32,19 @@ const placeSchema = z.object({
   booking_tips: z.string().nullable(),
 });
 
+// 하루 일정의 한 칸: 방문 시간대 + 장소 + 다음 장소까지의 이동 (PRD N1)
+const stopSchema = z.object({
+  time: z.string(),
+  place: placeSchema,
+  travel_to_next: z.object({ mode: z.string(), minutes: z.number() }).nullable(),
+});
+
 const modelAnswerSchema = z.object({
-  // 하루 일정(itinerary)은 작업 15에서 추가한다. 거절은 분류 단계에서 코드가 처리한다.
-  kind: z.enum(["answer", "clarify"]),
+  // 거절은 분류 단계에서 코드가 처리한다. 하루 일정은 kind="itinerary"와 stops로 받는다.
+  kind: z.enum(["answer", "itinerary", "clarify"]),
   reply: z.string(),
   places: z.array(placeSchema),
+  stops: z.array(stopSchema),
 });
 
 type ModelAnswer = z.infer<typeof modelAnswerSchema>;
@@ -176,6 +187,30 @@ function toChatResponse(
   isFilming: boolean,
   namedWork: string | null,
 ): ChatResponse {
+  // 하루 일정: 확인된 장소만 남기고, 3곳 미만이면 일정으로 보여 주지 않고 되묻는다 (PRD N1)
+  if (answer.kind === "itinerary") {
+    const stops: ItineraryStop[] = answer.stops
+      .map((s) => ({ s, place: toVerifiedPlace(s.place, searched, false, null) }))
+      .filter((x): x is { s: (typeof answer.stops)[number]; place: Place } => x.place !== null)
+      .slice(0, MAX_ITINERARY_PLACES)
+      .map(({ s, place }) => ({
+        time: toPlainText(s.time),
+        place,
+        travelToNext: s.travel_to_next
+          ? {
+              mode: toPlainText(s.travel_to_next.mode),
+              minutes: Math.max(1, Math.round(s.travel_to_next.minutes)),
+            }
+          : null,
+      }));
+    if (stops.length < MIN_ITINERARY_PLACES) {
+      return { kind: "clarify", reply: MESSAGES.noConfirmedItinerary, places: [], itinerary: null };
+    }
+    // 마지막 장소에는 "다음 장소"가 없다 (중간 장소가 걸러졌어도 이동 안내가 엉키지 않게 한다)
+    stops[stops.length - 1].travelToNext = null;
+    return { kind: "itinerary", reply: toPlainText(answer.reply), places: [], itinerary: { stops } };
+  }
+
   // 되묻기 답변에는 장소 카드를 붙이지 않는다.
   if (answer.kind !== "answer") {
     return { kind: answer.kind, reply: toPlainText(answer.reply), places: [], itinerary: null };
@@ -208,6 +243,10 @@ function answerFromTriage(t: Triage, hasLocation: boolean): ChatResponse | null 
   // 촬영지 질문인데 어느 작품·가수인지 모르면 검색하지 않고 먼저 묻는다. (PRD M2: 작품이나 가수 이름을 입력하면 안내)
   if (t.topic === "filming_location" && !t.named_work) {
     return { kind: "clarify", reply: MESSAGES.askWhichWork, places: [], itinerary: null };
+  }
+  // 하루 일정인데 어느 지역인지 모르면 검색하지 않고 먼저 묻는다. (내 위치를 켜 두었으면 그 주변으로 본다)
+  if (t.topic === "day_plan" && !t.area_known && !hasLocation) {
+    return { kind: "clarify", reply: MESSAGES.askDayPlanArea, places: [], itinerary: null };
   }
   // 인사에는 검색 없이 환영 문구로 답한다.
   if (t.topic === "greeting") {
@@ -255,6 +294,19 @@ function withKoreanSearch(
   return input;
 }
 
+/** 이전 Haru 답변(일정)에 적힌 "[source: 주소]"를 모은다. 일정 수정 요청에서 바뀌지 않는 장소를 유지하는 데 쓴다. */
+function urlsFromHistory(messages: ChatMessage[]): string[] {
+  const urls: string[] = [];
+  for (const m of messages) {
+    if (m.role !== "assistant") continue;
+    for (const found of m.content.matchAll(/\[source: (https?:\/\/[^\]\s]+)\]/g)) {
+      const url = normalizeUrl(found[1]);
+      if (url) urls.push(url);
+    }
+  }
+  return urls;
+}
+
 /** 최근 대화를 분류한 뒤, 필요한 경우에만 웹 검색으로 확인한 Haru의 답변(글 + 장소 목록)을 받는다. */
 export async function askHaru(
   messages: ChatMessage[],
@@ -270,16 +322,17 @@ export async function askHaru(
   const isFilming = classified.topic === "filming_location";
   const koreanQuery =
     classified.topic === "accommodation" || isFilming ? classified.korean_search_query : null;
+  const isDayPlan = classified.topic === "day_plan";
   const nearArea = location ? await describeLocation(location) : null;
   const response = await getOpenAIClient().responses.create({
     model: OPENAI_MODEL,
-    instructions: buildInstructions(isFilming, location, nearArea),
+    instructions: buildInstructions({ isFilming, isDayPlan, location, nearArea }),
     input: withKoreanSearch(messages, koreanQuery, nearArea),
     tools: [{ type: "web_search", user_location: { type: "approximate", country: "KR" } }],
     include: ["web_search_call.action.sources"],
     // 매번 웹 검색을 하게 한다. 검색을 건너뛰면 출처 주소를 확인할 수 없어 장소가 모두 걸러진다.
     tool_choice: "required",
-    max_output_tokens: OPENAI_MAX_OUTPUT_TOKENS,
+    max_output_tokens: isDayPlan ? OPENAI_ITINERARY_MAX_OUTPUT_TOKENS : OPENAI_MAX_OUTPUT_TOKENS,
     text: {
       format: {
         type: "json_schema",
@@ -292,11 +345,26 @@ export async function askHaru(
 
   // 형식이 어긋나면 오류를 던지고, 호출한 쪽(route.ts)에서 영어 오류 안내로 바꾼다.
   const answer = modelAnswerSchema.parse(JSON.parse(response.output_text));
-  if (!answer.reply.trim() && answer.places.length === 0) {
+  if (!answer.reply.trim() && answer.places.length === 0 && answer.stops.length === 0) {
     throw new Error("empty answer");
   }
   const namedWork = isFilming ? toPlainText(classified.named_work ?? "") || null : null;
-  const chat = toChatResponse(answer, collectSearchedUrls(response), isFilming, namedWork);
+  const searched = collectSearchedUrls(response);
+  // 일정 일부를 고치는 요청에서는, 바꾸지 않는 장소를 다시 검색하지 못할 수 있다. 그래서 앞서 확인되어
+  // 보여 준 일정의 출처 주소("[source: …]")는 이번에도 확인된 것으로 인정한다.
+  if (isDayPlan) for (const url of urlsFromHistory(messages)) searched.add(url);
+  const chat = toChatResponse(answer, searched, isFilming, namedWork);
+
+  // 하루 일정: 일정의 장소들에 좌표를 채운다. 여러 곳을 도는 일정이라 반경 2km 제한은 적용하지 않는다.
+  if (chat.itinerary) {
+    const stops = chat.itinerary.stops;
+    const placedStops = await attachPositions(stops.map((s) => s.place));
+    return {
+      ...chat,
+      itinerary: { stops: stops.map((s, i) => ({ ...s, place: placedStops[i] })) },
+    };
+  }
+
   // 확인된 장소의 좌표를 Google 장소 검색으로 채운다 (실패해도 답변은 그대로 보낸다)
   const placed = await attachPositions(chat.places);
   if (!location) return { ...chat, places: placed };

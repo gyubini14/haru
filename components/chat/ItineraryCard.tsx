@@ -1,21 +1,56 @@
+import { MESSAGES } from "@/lib/messages";
 import type { ItineraryStop } from "@/lib/types";
 
+/** 출처 주소에서 사이트 이름(도메인)만 보여 준다 */
+function siteName(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "source";
+  }
+}
+
+// 하루 일정 카드 (PRD N1). 번호는 지도 마커 번호와 같다.
 export function ItineraryCard({ stops }: { stops: ItineraryStop[] }) {
   if (stops.length === 0) return null;
   return (
-    <ol className="space-y-2 rounded-xl border border-amber-200 bg-white p-3 text-sm dark:border-amber-900 dark:bg-zinc-900">
+    <ol className="space-y-3 rounded-xl border border-amber-200 bg-white p-3 text-sm dark:border-amber-900 dark:bg-zinc-900">
       {stops.map((stop, i) => (
-        <li key={`${stop.time}-${stop.place.name}`}>
-          <p className="text-xs font-semibold text-amber-700 dark:text-amber-400">
-            {i + 1}. {stop.time}
-          </p>
-          <p className="font-semibold">{stop.place.name}</p>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">{stop.place.area}</p>
-          {stop.travelToNext && (
-            <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
-              ↓ {stop.travelToNext.minutes} min by {stop.travelToNext.mode}
-            </p>
-          )}
+        <li key={`${stop.time}-${stop.place.name}-${i}`} className="flex gap-2">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-400 text-xs font-bold text-zinc-900">
+            {i + 1}
+          </span>
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-amber-700 dark:text-amber-400">{stop.time}</p>
+            <p className="font-semibold">{stop.place.name}</p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">{stop.place.area}</p>
+            <p className="mt-1">{stop.place.reason}</p>
+            <p className="mt-1 text-zinc-600 dark:text-zinc-300">{stop.place.howToGetThere}</p>
+            {stop.place.sourceUrl && (
+              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                Source:{" "}
+                <a
+                  href={stop.place.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  {siteName(stop.place.sourceUrl)}
+                </a>
+                . {MESSAGES.checkSource}
+              </p>
+            )}
+            {stop.place.mapNote && (
+              <p className="mt-1 text-xs text-zinc-500">
+                Couldn&apos;t place this on the map: {stop.place.mapNote}
+              </p>
+            )}
+            {stop.travelToNext && (
+              <p className="mt-2 text-xs font-medium text-zinc-600 dark:text-zinc-300">
+                ↓ {stop.travelToNext.minutes} min by {stop.travelToNext.mode}
+              </p>
+            )}
+          </div>
         </li>
       ))}
     </ol>

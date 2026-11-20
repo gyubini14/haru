@@ -42,6 +42,12 @@ export const MESSAGES = {
   /** PRD M2 규칙 4: 촬영지에는 이웃을 배려하라는 주의사항을 함께 전달 */
   filmingEtiquette:
     "Please be quiet and respectful of nearby residents, and do not enter private property or film without permission.",
+  /** 설계 제안: 하루 일정을 짤 지역을 모를 때 되묻는 문구 */
+  askDayPlanArea:
+    "Which area or city would you like to explore? For example Seoul, Busan or Jeju. Tell me and I'll plan your day.",
+  /** 설계 제안: 확인된 장소가 3곳 미만이라 일정을 만들 수 없을 때 */
+  noConfirmedItinerary:
+    "I couldn't confirm enough places for a day plan yet. Could you tell me a more specific area or what you'd like to do?",
   /** PRD 6번: 내 위치 반경 2km 안에 확인된 장소가 없을 때 */
   noPlacesNearby:
     "No places within 2 km of your location. You can turn off location sharing to search other areas.",

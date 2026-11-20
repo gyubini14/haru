@@ -22,6 +22,9 @@ export const MAX_ANSWER_PLACES = 3;
 export const MIN_ITINERARY_PLACES = 3;
 export const MAX_ITINERARY_PLACES = 5;
 
+/** 하루 일정에서 장소 사이 이동 시간 상한(분, 대중교통 기준) (PRD N1) */
+export const MAX_TRANSIT_MINUTES = 30;
+
 /** 지도에 한 번에 표시하는 최대 장소 수 (PRD N3) */
 export const MAX_MAP_PLACES = 5;
 
@@ -40,3 +43,6 @@ export const TRIAGE_MAX_OUTPUT_TOKENS = 200;
 
 /** AI 답변 최대 출력 길이(토큰). 응답 시간과 비용을 줄이기 위한 제한 */
 export const OPENAI_MAX_OUTPUT_TOKENS = 1500;
+
+/** 하루 일정은 장소가 많아 출력이 길어서 별도로 늘린다 */
+export const OPENAI_ITINERARY_MAX_OUTPUT_TOKENS = 2500;
