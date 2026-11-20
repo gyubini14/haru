@@ -27,6 +27,8 @@ export interface Place {
   source: string | null;
   /** 웹 검색으로 확인했는지 */
   verified: boolean;
+  /** 이 장소를 확인한 웹 검색 결과 주소 (확인된 경우에만) */
+  sourceUrl: string | null;
   /** 지도 좌표. 확인하지 못하면 null (좌표 변환은 작업 12에서 연결) */
   position: Position | null;
   /** 지도에 올리지 못한 이유 */

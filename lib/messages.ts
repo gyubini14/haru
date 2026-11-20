@@ -10,6 +10,12 @@ export const MESSAGES = {
   tooLong: "Please keep your message within 300 characters.",
   /** 설계 제안 */
   invalidRequest: "Sorry, I couldn't read that request. Please try again.",
+  /** 설계 제안: 웹 검색으로 확인된 장소가 하나도 없을 때 */
+  noConfirmedPlaces:
+    "I couldn't confirm specific places for that yet. Could you tell me the area or what you're looking for?",
+  /** PRD 7번: 출처 확인 안내 */
+  checkSource:
+    "Please check the original source for terms and latest details.",
   /** 설계 제안 */
   aiFailure: "Sorry, something went wrong. Please try again.",
   /** PRD 7번 */

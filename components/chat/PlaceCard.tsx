@@ -1,9 +1,19 @@
+import { MESSAGES } from "@/lib/messages";
 import type { Place } from "@/lib/types";
 
 interface PlaceCardProps {
   place: Place;
   /** 카드 번호 (지도 마커 번호와 맞춘다) */
   index: number;
+}
+
+/** 출처 주소에서 사이트 이름(도메인)만 보여 준다. 예: allaboutkor.com */
+function siteName(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "source";
+  }
 }
 
 export function PlaceCard({ place, index }: PlaceCardProps) {
@@ -26,10 +36,25 @@ export function PlaceCard({ place, index }: PlaceCardProps) {
       <p className="mt-2">{place.reason}</p>
       <p className="mt-1 text-zinc-600 dark:text-zinc-300">{place.howToGetThere}</p>
       {place.tip && <p className="mt-1 text-zinc-600 dark:text-zinc-300">Tip: {place.tip}</p>}
-      {!place.verified && (
-        <p className="mt-2 text-xs text-amber-700 dark:text-amber-400">
-          Please verify the details before you go.
+      {place.sourceUrl ? (
+        <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+          Source:{" "}
+          <a
+            href={place.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            {siteName(place.sourceUrl)}
+          </a>
+          . {MESSAGES.checkSource}
         </p>
+      ) : (
+        !place.verified && (
+          <p className="mt-2 text-xs text-amber-700 dark:text-amber-400">
+            Please verify the details before you go.
+          </p>
+        )
       )}
       {place.mapNote && (
         <p className="mt-2 text-xs text-zinc-500">
