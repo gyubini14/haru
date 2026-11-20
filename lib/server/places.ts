@@ -6,13 +6,14 @@ import { MAX_MAP_PLACES } from "@/lib/constants";
 // 한국 밖 좌표는 엉뚱한 나라의 같은 이름 장소이므로 걸러낸다
 import { distanceKm, isInKorea } from "@/lib/geo";
 import { MESSAGES } from "@/lib/messages";
-import type { Place, Position } from "@/lib/types";
+import type { Place, PlacePhoto, Position } from "@/lib/types";
 
 const TEXT_SEARCH_URL = "https://places.googleapis.com/v1/places:searchText";
 const PLACES_TIMEOUT_MS = 5000;
 
 type RawPlace = {
   displayName?: { text?: string };
+  photos?: { name?: string; authorAttributions?: { displayName?: string; uri?: string }[] }[];
   location?: { latitude?: number; longitude?: number };
   viewport?: {
     low?: { latitude?: number; longitude?: number };
@@ -105,6 +106,39 @@ async function findArea(area: string): Promise<AreaInfo | null> {
   return { center, halfSizeKm };
 }
 
+const PHOTO_BASE_URL = "https://places.googleapis.com/v1";
+const PHOTO_WIDTH_PX = 640;
+
+/**
+ * 장소의 대표 사진 1장의 주소와 촬영자 표기를 받는다. 못 받으면 null (사진만 빠지고 답변은 그대로 간다).
+ * skipHttpRedirect로 사진 주소(키가 들어 있지 않은 주소)만 받아서, API 키가 브라우저에 노출되지 않게 한다.
+ */
+async function fetchPhoto(raw: RawPlace | null): Promise<PlacePhoto | null> {
+  const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+  const photo = raw?.photos?.[0];
+  // 사진 이름이 예상한 모양이 아니면 요청하지 않는다 (주소를 이어 붙이므로 안전하게 확인)
+  if (!apiKey || !photo?.name || !/^places\/[\w-]+\/photos\/[\w-]+$/.test(photo.name)) return null;
+  try {
+    const res = await fetch(
+      `${PHOTO_BASE_URL}/${photo.name}/media?maxWidthPx=${PHOTO_WIDTH_PX}&skipHttpRedirect=true`,
+      { headers: { "X-Goog-Api-Key": apiKey }, signal: AbortSignal.timeout(PLACES_TIMEOUT_MS), cache: "no-store" },
+    );
+    if (!res.ok) {
+      console.error("photo lookup failed:", res.status);
+      return null;
+    }
+    const data = (await res.json()) as { photoUri?: string };
+    // Google 사진 서버의 https 주소만 사용한다
+    if (!data.photoUri || !/^https:\/\/[\w.-]+\.googleusercontent\.com\//.test(data.photoUri)) return null;
+    const author = photo.authorAttributions?.[0];
+    const authorUrl = author?.uri && /^https:\/\/maps\.google\.com\//.test(author.uri) ? author.uri : null;
+    return { url: data.photoUri, authorName: (author?.displayName ?? "Google Maps user").slice(0, 60), authorUrl };
+  } catch (e) {
+    console.error("photo lookup error:", e instanceof Error ? e.name : "unknown");
+    return null;
+  }
+}
+
 /** 같은 이름이라도 적힌 지역에서 이 거리(km)보다 멀리 떨어진 곳이면 다른 장소로 보고 확인 안 됨으로 처리한다 */
 const MIN_AREA_TOLERANCE_KM = 12;
 
@@ -116,7 +150,7 @@ async function findPosition(
   name: string,
   area: string,
   areaInfo: AreaInfo | null,
-): Promise<{ position: Position; nameKo: string | null } | null> {
+): Promise<{ position: Position; nameKo: string | null; photo: PlacePhoto | null } | null> {
   const bias = areaInfo
     ? {
         center: areaInfo.center,
@@ -129,12 +163,17 @@ async function findPosition(
   // 한국어로 요청해, 같은 장소의 한글 이름(Google이 알려 주는 표기)도 함께 받는다.
   // 한국어 검색이 실패하면(영어 이름만 아는 장소) 영어로 다시 찾고, 이때는 한글 이름 없이 좌표만 쓴다.
   for (const language of ["ko", "en"]) {
-    const raw = await searchText(query, "places.location,places.displayName", bias, language);
+    const raw = await searchText(query, "places.location,places.displayName,places.photos", bias, language);
     const position = toPosition(raw?.location);
     if (!position) continue;
     if (areaInfo && tolerance !== null && distanceKm(areaInfo.center, position) > tolerance) continue;
     const ko = language === "ko" ? (raw?.displayName?.text?.trim() ?? "") : "";
-    return { position, nameKo: /[가-힣]/.test(ko) ? ko.slice(0, 80) : null };
+    return {
+      position,
+      nameKo: /[가-힣]/.test(ko) ? ko.slice(0, 80) : null,
+      // 좌표를 확인한 장소에만 사진을 붙인다 (다른 곳의 사진이 붙는 것을 줄인다)
+      photo: await fetchPhoto(raw),
+    };
   }
   return null;
 }
@@ -216,7 +255,7 @@ export async function attachPositions(places: Place[]): Promise<Place[]> {
       if (i >= MAX_MAP_PLACES) return place;
       const found = await findPosition(place.name, place.area, await areaOf(place.area));
       return found
-        ? { ...place, position: found.position, nameKo: found.nameKo, mapNote: null }
+        ? { ...place, position: found.position, nameKo: found.nameKo, photo: found.photo, mapNote: null }
         : { ...place, position: null, mapNote: MESSAGES.noMapLocation };
     }),
   );

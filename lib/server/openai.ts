@@ -180,6 +180,7 @@ function toVerifiedPlace(
     bookingTips: toPlainText(p.booking_tips ?? "") || null,
     // 좌표는 작업 12(장소 이름 → 좌표 변환)에서 채운다.
     position: null,
+    photo: null,
     mapNote: null,
   };
 }

@@ -1,3 +1,4 @@
+import { PlacePhoto } from "@/components/chat/PlacePhoto";
 import { MAX_TRANSIT_MINUTES } from "@/lib/constants";
 import { MESSAGES } from "@/lib/messages";
 import type { ItineraryStop } from "@/lib/types";
@@ -28,7 +29,7 @@ export function ItineraryCard({ stops }: { stops: ItineraryStop[] }) {
           <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ink text-xs font-semibold text-paper">
             {i + 1}
           </span>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <p className="text-xs font-medium uppercase tracking-wider text-mute">{stop.time}</p>
             <p className="text-base font-semibold tracking-tight">
               {stop.place.name}
@@ -37,6 +38,9 @@ export function ItineraryCard({ stops }: { stops: ItineraryStop[] }) {
               )}
             </p>
             <p className="text-xs text-mute">{stop.place.area}</p>
+            <div className="mt-2">
+              <PlacePhoto photo={stop.place.photo} name={stop.place.name} />
+            </div>
             <p className="mt-2">{stop.place.reason}</p>
             <p className="mt-1 text-mute">{stop.place.howToGetThere}</p>
             {stop.place.sourceUrl && (

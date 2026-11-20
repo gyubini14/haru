@@ -12,6 +12,13 @@ export interface Position {
   lng: number;
 }
 
+/** 대표 사진과 Google이 요구하는 촬영자 표기 */
+export interface PlacePhoto {
+  url: string;
+  authorName: string;
+  authorUrl: string | null;
+}
+
 export interface Place {
   /** 장소 이름 (영어) */
   name: string;
@@ -37,6 +44,8 @@ export interface Place {
   bookingTips: string | null;
   /** 지도 좌표. 확인하지 못하면 null (좌표 변환은 작업 12에서 연결) */
   position: Position | null;
+  /** Google 장소 검색의 대표 사진 1장. 없으면 null (출처 사이트의 사진은 쓰지 않는다) */
+  photo: PlacePhoto | null;
   /** 지도에 올리지 못한 이유 */
   mapNote: string | null;
 }

@@ -1,3 +1,4 @@
+import { PlacePhoto } from "@/components/chat/PlacePhoto";
 import { MESSAGES } from "@/lib/messages";
 import type { Place } from "@/lib/types";
 
@@ -19,6 +20,7 @@ function siteName(url: string): string {
 export function PlaceCard({ place, index }: PlaceCardProps) {
   return (
     <div className="rounded-2xl border border-line bg-paper p-4 text-sm leading-relaxed">
+      <PlacePhoto photo={place.photo} name={place.name} />
       <div className="flex items-start gap-3">
         <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ink text-xs font-semibold text-paper">
           {index + 1}
