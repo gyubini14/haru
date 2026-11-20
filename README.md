@@ -6,7 +6,7 @@
 맛집·숙소·교통·사진 스팟은 물론 한국 드라마·아이돌 촬영지까지, 한국어를 몰라도 영어 대화 한 번으로 찾고 지도에서 위치를 확인하고 하루 일정까지 받을 수 있습니다.
 
 - 작성자: Gyubgyub
-- 접속 주소: https://haru-omega-ecru.vercel.app
+- 접속 주소: https://haru-omega-ecru.vercel.app (메인페이지 `/`, 채팅 `/chat`)
 
 ## 왜 만들었나
 

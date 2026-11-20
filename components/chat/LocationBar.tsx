@@ -8,12 +8,12 @@ export function LocationBar({ status, toggle }: LocationControl) {
   const active = status === "on" || status === "getting";
 
   return (
-    <div className="space-y-1.5 border-b border-line px-5 pb-3 text-xs">
+    <div className="space-y-1.5 border-b border-line px-4 pb-2 text-xs sm:px-5 lg:pb-3">
       <button
         type="button"
         onClick={toggle}
         aria-pressed={active}
-        className={`rounded-full border px-4 py-1.5 font-medium transition-colors ${
+        className={`inline-flex min-h-11 items-center rounded-full border px-4 font-medium transition-colors lg:min-h-0 lg:py-1.5 ${
           active
             ? "border-ink bg-ink text-paper"
             : "border-line text-ink hover:border-ink"

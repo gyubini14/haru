@@ -173,16 +173,35 @@ export function MapView({ points }: MapViewProps) {
     });
 
     const count = markersRef.current.length;
-    if (count === 0) {
-      // 표시할 위치가 없으면 처음 화면(서울 중심)으로 돌아간다
-      map.setCenter(DEFAULT_CENTER);
-      map.setZoom(DEFAULT_ZOOM);
-    } else if (count === 1) {
-      map.setCenter(bounds.getCenter());
-      map.setZoom(SINGLE_PLACE_ZOOM);
-    } else if (count > 1) {
-      map.fitBounds(bounds, 48);
-    }
+    const fit = () => {
+      if (count === 0) {
+        // 표시할 위치가 없으면 처음 화면(서울 중심)으로 돌아간다
+        map.setCenter(DEFAULT_CENTER);
+        map.setZoom(DEFAULT_ZOOM);
+      } else if (count === 1) {
+        map.setCenter(bounds.getCenter());
+        map.setZoom(SINGLE_PLACE_ZOOM);
+      } else {
+        map.fitBounds(bounds, 48);
+      }
+    };
+    fit();
+
+    // 작은 화면에서 접혀 있던(높이 0) 지도가 펼쳐지면 그 크기에 맞춰 한 번 다시 맞춘다
+    const box = containerRef.current;
+    let wasHidden = !box || box.clientHeight === 0;
+    const observer = box
+      ? new ResizeObserver(() => {
+          const hidden = box.clientHeight === 0;
+          if (wasHidden && !hidden) {
+            google.maps.event.trigger(map, "resize");
+            fit();
+          }
+          wasHidden = hidden;
+        })
+      : null;
+    if (box) observer?.observe(box);
+    return () => observer?.disconnect();
   }, [map, points]);
 
   return (

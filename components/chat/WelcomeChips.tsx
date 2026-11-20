@@ -18,7 +18,7 @@ export function WelcomeChips({ onPick }: { onPick: (text: string) => void }) {
             key={text}
             type="button"
             onClick={() => onPick(text)}
-            className="rounded-full border border-line px-4 py-2 text-left text-sm transition-colors hover:border-ink"
+            className="min-h-11 rounded-full border border-line px-4 py-2 text-left text-sm transition-colors hover:border-ink"
           >
             {text}
           </button>
